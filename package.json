@@ -1,0 +1,10 @@
+{
+  "name": "arkwright-longflow",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "validate:config": "node scripts/validate-config.mjs",
+    "prompt:kickoff": "node scripts/generate-kickoff-prompt.mjs"
+  }
+}
