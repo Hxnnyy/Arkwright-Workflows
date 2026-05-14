@@ -1,101 +1,80 @@
-# Arkwright Longflow
+# Arkwright Workflows
 
-Arkwright Longflow is an opinionated, skill-driven delivery framework for non-technical operators who want robust software outcomes from AI coding agents.
+Protocolised agentic delivery workflows for implementation, review, remediation, and closure.
 
-It combines:
+Arkwright Workflows is a workflow-pack repository for robust AI-agent software delivery. It contains multiple self-contained workflows that share common orchestration primitives: continuous execution, durable state, reviewer protocols, deterministic predicates, heartbeat recovery, and explicit governance for when agents may decide, propose, or stop.
 
-- Decision stress testing
-- Multi-model council convergence
-- PRD authoring
-- Issue slicing with deterministic predicates
-- Continuous execution with hard-stop guardrails
-- Structured wave and final audits
+## Which Workflow Should I Use?
 
-Longflow is based on longflow2 patterns, with explicit council stages and model/persona routing from real Phase 7 delivery practice.
+Use **Arkwright Longflow** when you are starting from rough intent or planned feature delivery. Longflow takes an idea through grilling, council convergence, PRD authoring, issue slicing, implementation waves, wave gates, final closeout, and stabilisation.
 
-## Why This Works
+Use **Arkwright Merge Train** when you are auditing and remediating a monster branch or PR, especially when many child PRs must be signed off and merged into a parent branch with rolling integration checkpoints.
 
-1. Ambiguity is removed early through structured grilling.
-2. Plan quality is stress-tested by independent model reviewers before coding starts.
-3. Delivery contracts become executable via per-issue predicate scripts.
-4. Continuous orchestration preserves momentum while limiting random check-in pauses.
-5. Closure is evidence-based, not vibe-based.
+## Workflows
 
-## End-to-End Flow
+- [Longflow](workflows/longflow/README.md): planned implementation workflow for converting intent into shipped, audited work.
+- [Merge Train](workflows/merge-train/README.md): large-PR audit, remediation, child-merge, and parent-closeout workflow.
 
-1. Run grill-me to turn rough intent into a proposal.
-2. Human review pass: fix intent mismatches before any council run.
-3. Run council Stage A until no unresolved Critical, High, or Medium disagreements.
-4. Run council Stage B across role personas until no unresolved Critical, High, or Medium disagreements.
-5. Run write-a-prd on the converged plan.
-6. Run prd-to-issues to produce child issues, wave plan, and predicates.
-7. Run issues-execution in continuous mode.
-8. Enforce wave-gate reviews after each wave.
-9. Enforce final closeout audits across required models and personas.
-10. Close parent PRD only when all closure rules pass.
+Each workflow folder is self-contained. It includes its own README, skills, examples, templates, and config example. Workflows may reference shared protocol primitives in `shared/`, but users should not need to reconstruct a workflow from root-level docs.
 
-## Opinionated Defaults Included
+## Shared Protocol Primitives
 
-All routing references **provider aliases**, not pinned versions — when frontier models roll, edit `modelAliases` in one place.
+- [Continuous mode](shared/orchestration/continuous-mode.md)
+- [Hard-block conditions](shared/orchestration/hard-block-conditions.md)
+- [Heartbeat protocol](shared/orchestration/heartbeat-protocol.md)
+- [State files](shared/orchestration/state-files.md)
+- [Autonomy envelope](shared/orchestration/autonomy-envelope.md)
+- [Course-correction protocol](shared/orchestration/course-correction-protocol.md)
+- [Reviewer protocol](shared/review/reviewer-protocol.md)
+- [Reviewer personas](shared/review/reviewer-personas.md)
+- [Verdict schema](shared/review/verdict-schema.md)
+- [Acceptance predicates](shared/verification/acceptance-predicates.md)
+- [Predicate adequacy review](shared/verification/predicate-adequacy-review.md)
+- [Test adequacy review](shared/verification/test-adequacy-review.md)
 
-- Orchestrator: `frontier-openai-orchestrator` with high deliberation prompting.
-- Council chair: `frontier-oss` — drawn from a lab not represented in the voting set, so tie-breaks and severity-downgrade sign-offs are not subject to intra-lab homogenization. The chair does not vote.
-- Council Stage A voting members: `frontier-anthropic-strong`, `frontier-openai`, `frontier-google`, `frontier-xai`.
-- Council Stage B voting members: `frontier-anthropic-fast`, `frontier-openai`, `frontier-google`, `frontier-xai`.
-- Stage B persona routing: per PRD type (frontend / backend / data / infra / fullstack), not always-all-five. Exclusions require chair sign-off.
-- Convergence: explicit per-finding disposition, severity-downgrade sign-off by chair, hard cycle cap (default 5) with chair force-disposition fallback.
-- Final closeout reviewer models: `frontier-openai`, `frontier-anthropic-fast`, `frontier-google`. All five personas always run at final closeout.
-- Frontend-heavy issue lead routing: `frontier-anthropic-fast`.
-- Backend/docs/security-heavy issue lead routing: `frontier-openai-code`.
+## Quick Start
 
-Everything above is configurable in longflow.config.json.
+1. Choose a workflow.
+2. Copy that workflow's config example.
+3. Edit model aliases, harness settings, branch policy, and test/predicate commands.
+4. Install or point your coding harness at the workflow skills.
+5. Start from the workflow README and keep the shared continuous directive, state, execplan, and heartbeat files current during execution.
 
-## Non-Technical Quick Start
+Examples:
 
-1. Copy longflow.config.example.json to longflow.config.json.
-2. Edit model names and harness names to match your subscriptions/tools.
-3. Install these skills in your coding harness skill directory.
-4. Start with grill-me and describe your goal in plain language.
-5. Follow the flow in docs/FLOW_STEPS.md.
+```powershell
+Copy-Item workflows\longflow\longflow.config.example.json workflows\longflow\longflow.config.json
+npm run validate:config -- workflows\longflow\longflow.config.json
+npm run prompt:kickoff -- workflows\longflow\longflow.config.json
+```
 
-If your harness supports named agents, keep the default reviewer persona names. If it does not, use prompt templates in examples/prompts and run equivalent generic subagent tasks.
+```powershell
+Copy-Item workflows\merge-train\merge-train.config.example.json workflows\merge-train\merge-train.config.json
+npm run validate:config -- workflows\merge-train\merge-train.config.json
+npm run prompt:kickoff -- workflows\merge-train\merge-train.config.json
+```
 
 ## Repository Layout
 
-- skills/: all longflow skills.
-- skills/_shared/: shared contracts used by multiple skills.
-- skills/_shared/templates/: reusable file templates.
-- docs/: operator documentation and guidelines.
-- scripts/: small helper scripts for config and kickoff prompt generation.
-- examples/: example config and prompt payloads.
+- `workflows/longflow/`: Arkwright Longflow workflow pack.
+- `workflows/merge-train/`: Arkwright Merge Train workflow pack.
+- `shared/`: reusable orchestration, review, verification, and state templates.
+- `scripts/`: workflow-aware validation, kickoff prompt generation, and optional heartbeat watching.
+- `examples/`: root-level workflow selection examples.
 
-## Configuration
+## Migration Notes
 
-- Main config file: longflow.config.json.
-- Validate config: npm run validate:config -- ./longflow.config.json
-- Generate kickoff prompt: npm run prompt:kickoff -- ./longflow.config.json
+This repository was formerly a single-workflow project named **Arkwright Longflow**. It is now **Arkwright Workflows**, a workflow-pack repository. The original Longflow framework remains available as `workflows/longflow/` and keeps the Arkwright Longflow brand inside that workflow folder.
 
-## Guardrails
+Config paths changed from root-level `longflow.config.json` to workflow-local config files such as `workflows/longflow/longflow.config.json`. Shared contracts formerly under `skills/_shared/` are now canonical under `shared/`; Longflow keeps local compatibility references where useful.
 
-Longflow assumes these defaults unless you override them:
+## Validation
 
-- Use a fresh branch and fresh worktree for major implementation runs.
-- Do not mutate protected environments used for demos while implementation is in flight.
-- Do not pause continuous mode except for explicit hard-block conditions.
-- Do not close issues without predicate pass.
-- Do not close parent PRD without required final audit pass set.
-
-## Provenance
-
-The opinionated council and closeout rules in this repo were extracted from an end-to-end Phase 7 architecture and delivery cycle, including:
-
-- Multi-stage council convergence
-- Persona matrix auditing
-- Model routing by issue class
-- Continuous execution and hard-block-only pauses
-- Final 15-pass persona-model closure gate
-
-See docs/PHASE7_PROVENANCE.md for the capture summary.
+```powershell
+npm run validate:config -- workflows\longflow\longflow.config.example.json
+npm run validate:config -- workflows\merge-train\merge-train.config.example.json
+npm run validate:links
+```
 
 ## License
 

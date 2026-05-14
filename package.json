@@ -1,10 +1,12 @@
 {
-  "name": "arkwright-longflow",
+  "name": "arkwright-workflows",
   "version": "1.0.0",
   "private": true,
   "type": "module",
   "scripts": {
     "validate:config": "node scripts/validate-config.mjs",
-    "prompt:kickoff": "node scripts/generate-kickoff-prompt.mjs"
+    "prompt:kickoff": "node scripts/generate-kickoff-prompt.mjs",
+    "heartbeat:watch": "node scripts/heartbeat-watch.mjs",
+    "validate:links": "node scripts/validate-markdown-links.mjs"
   }
 }

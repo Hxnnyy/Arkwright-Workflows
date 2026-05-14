@@ -1,0 +1,190 @@
+{
+  "version": "1.1",
+  "workflow": {
+    "name": "Arkwright Longflow",
+    "continuousModeDefault": true,
+    "pauseOnlyOnHardBlocks": true
+  },
+  "harness": {
+    "orchestrator": "copilot-chat",
+    "subagentDispatchStyle": "named-agent",
+    "supportsParallelSubagents": true
+  },
+  "modelAliases": {
+    "frontier-anthropic-strong": "Claude Opus 4.7",
+    "frontier-anthropic-fast": "Claude Sonnet 4.6",
+    "frontier-openai-orchestrator": "GPT-5.5",
+    "frontier-openai": "GPT-5.4",
+    "frontier-openai-code": "GPT-5.3-Codex",
+    "frontier-google": "Gemini 3.1 Pro",
+    "frontier-xai": "Grok-frontier",
+    "frontier-oss": "OSS-frontier"
+  },
+  "models": {
+    "orchestrator": {
+      "alias": "frontier-openai-orchestrator",
+      "reasoning": "xhigh"
+    },
+    "councilChair": {
+      "alias": "frontier-oss",
+      "reasoning": "high",
+      "rationale": "Independent of any voting council member to avoid intra-lab homogenization on tie-breaks."
+    },
+    "councilStageA": [
+      "frontier-anthropic-strong",
+      "frontier-openai",
+      "frontier-google",
+      "frontier-xai"
+    ],
+    "councilStageB": [
+      "frontier-anthropic-fast",
+      "frontier-openai",
+      "frontier-google",
+      "frontier-xai"
+    ]
+  },
+  "routing": {
+    "leadByIssueType": {
+      "frontend": "frontier-anthropic-fast",
+      "backend": "frontier-openai-code",
+      "security": "frontier-openai-code",
+      "docs": "frontier-openai-code"
+    },
+    "reviewersByIssueType": {
+      "frontend": [
+        "frontier-google",
+        "frontier-openai-code"
+      ],
+      "backend": [
+        "frontier-openai",
+        "frontier-anthropic-fast"
+      ],
+      "security": [
+        "frontier-openai",
+        "frontier-anthropic-fast"
+      ],
+      "docs": [
+        "frontier-openai",
+        "frontier-anthropic-fast"
+      ]
+    },
+    "waveGateReviewers": [
+      "frontier-openai",
+      "frontier-anthropic-fast",
+      "frontier-google"
+    ],
+    "finalCloseoutModels": [
+      "frontier-openai",
+      "frontier-anthropic-fast",
+      "frontier-google"
+    ],
+    "finalCloseoutPersonas": [
+      "implementation-quality-reviewer",
+      "documentation-reviewer",
+      "performance-reviewer",
+      "product-design-reviewer",
+      "security-reviewer"
+    ],
+    "personasByPrdType": {
+      "frontend": [
+        "implementation-quality-reviewer",
+        "product-design-reviewer",
+        "performance-reviewer"
+      ],
+      "backend": [
+        "implementation-quality-reviewer",
+        "performance-reviewer",
+        "security-reviewer",
+        "documentation-reviewer"
+      ],
+      "data": [
+        "implementation-quality-reviewer",
+        "security-reviewer",
+        "performance-reviewer"
+      ],
+      "infra": [
+        "security-reviewer",
+        "performance-reviewer",
+        "documentation-reviewer"
+      ],
+      "fullstack": [
+        "implementation-quality-reviewer",
+        "documentation-reviewer",
+        "performance-reviewer",
+        "product-design-reviewer",
+        "security-reviewer"
+      ],
+      "default": [
+        "implementation-quality-reviewer",
+        "documentation-reviewer",
+        "performance-reviewer",
+        "product-design-reviewer",
+        "security-reviewer"
+      ]
+    }
+  },
+  "convergence": {
+    "openCriticalsAllowed": 0,
+    "requireDispositionForSeverity": [
+      "high",
+      "medium"
+    ],
+    "maxNewMediumOrAboveFindingsPerCycleToExit": 2,
+    "severityDowngradeRequiresChairSignoff": true,
+    "stageAMaxCycles": 5,
+    "stageBMaxCycles": 5,
+    "atCapAction": "chair-force-disposition-and-escalate"
+  },
+  "guardrails": {
+    "requireFreshBranch": true,
+    "requireFreshWorktree": true,
+    "protectedEnvironment": [
+      "telephony",
+      "db-mock",
+      "api",
+      "webapp"
+    ],
+    "orchestratorDelegationDefault": true,
+    "maxImplementerRetryPerIssue": 3,
+    "maxReviewerRetryPerCategory": 3
+  },
+  "heartbeatPolicy": {
+    "stateFile": "STATE.json",
+    "staleAfterSeconds": 900,
+    "rereadAtBatchBoundaries": true
+  },
+  "autonomyEnvelope": {
+    "green": [
+      "run-extra-tests",
+      "add-missing-regression-tests",
+      "local-refactor-within-scope",
+      "split-internal-subtasks",
+      "rerun-impacted-reviewers",
+      "update-risk-register",
+      "continue-after-non-hard-block-uncertainty"
+    ],
+    "amber": [
+      "change-acceptance-predicates",
+      "broaden-remediation-scope",
+      "reslice-issues",
+      "change-reviewer-requirements",
+      "accept-non-trivial-residual-risk"
+    ],
+    "red": [
+      "ambiguous-product-semantics",
+      "missing-required-credentials",
+      "irreconcilable-reviewer-contradiction",
+      "migration-data-loss-security-tradeoff",
+      "state-corruption",
+      "irreversible-destructive-action"
+    ]
+  },
+  "closurePolicy": {
+    "predicatePassRequired": true,
+    "predicatePassSufficient": false,
+    "predicateAdequacyReviewRequired": true,
+    "testAdequacyReviewRequired": true,
+    "allowPassWithNotesAtFinalCloseout": false,
+    "courseCorrectionProposalRequiredForPredicateChanges": true
+  }
+}

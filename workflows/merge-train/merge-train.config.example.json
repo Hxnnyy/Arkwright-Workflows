@@ -1,0 +1,84 @@
+{
+  "version": "1.0",
+  "workflow": {
+    "name": "Arkwright Merge Train",
+    "type": "merge-train",
+    "continuousModeDefault": true,
+    "pauseOnlyOnHardBlocks": true
+  },
+  "harness": {
+    "orchestrator": "codex",
+    "subagentDispatchStyle": "named-agent",
+    "supportsParallelSubagents": true
+  },
+  "modelAliases": {
+    "frontier-openai-orchestrator": "GPT-5.5",
+    "frontier-openai": "GPT-5.4",
+    "frontier-openai-code": "GPT-5.3-Codex",
+    "frontier-anthropic-fast": "Claude Sonnet 4.6",
+    "frontier-google": "Gemini 3.1 Pro"
+  },
+  "models": {
+    "orchestratorModel": "frontier-openai-orchestrator",
+    "childAuditModel": "frontier-openai",
+    "childRemediationModel": "frontier-openai-code",
+    "childVerifierModel": "frontier-anthropic-fast",
+    "parentCheckpointModels": ["frontier-openai", "frontier-anthropic-fast", "frontier-google"],
+    "finalReviewerModels": ["frontier-openai", "frontier-anthropic-fast", "frontier-google"]
+  },
+  "parentReviewerPersonas": [
+    "architecture-coherence-reviewer",
+    "runtime-integration-reviewer",
+    "security-reviewer",
+    "regression-test-reviewer",
+    "product-design-reviewer"
+  ],
+  "checkpointPolicy": {
+    "everyNChildMerges": 3,
+    "highRiskTriggers": [
+      "auth",
+      "security",
+      "database",
+      "schema",
+      "migration",
+      "public-api",
+      "background-job",
+      "shared-abstraction",
+      "build-config",
+      "test-config",
+      "architecture-boundary"
+    ]
+  },
+  "retryCaps": {
+    "childAuditRemediationCycles": 3,
+    "parentCheckpointRemediationCycles": 2,
+    "finalCloseoutCycles": 3
+  },
+  "hardBlockPolicy": {
+    "criticalRiskRequiresHumanSignoff": true,
+    "irreversibleActionsRequireHumanSignoff": true,
+    "allowPassWithNotesAtFinalCloseout": false
+  },
+  "heartbeatPolicy": {
+    "stateFile": "MERGE_TRAIN_STATE.json",
+    "staleAfterSeconds": 900,
+    "rereadAtBatchBoundaries": true
+  },
+  "branchConventions": {
+    "parentBranchPattern": "feature/*",
+    "childBranchPattern": "feature/*/child-*",
+    "mergePolicy": "merge-child-branch-into-parent-after-verifier-pass",
+    "noUnpromptedPush": true
+  },
+  "prConventions": {
+    "parentPrLabel": "merge-train-parent",
+    "childPrLabel": "merge-train-child",
+    "completionCommentTemplate": "templates/CHILD_PR_COMPLETION_COMMENT.md"
+  },
+  "testCommands": [
+    "npm test"
+  ],
+  "predicateCommands": [
+    "npm run validate:links"
+  ]
+}

@@ -1,0 +1,36 @@
+# Harness Setup (OS Agnostic)
+
+This repository is harness-agnostic by design.
+
+## Goal
+
+Make each skill available in your preferred coding harness with minimal coupling to one vendor.
+
+## Setup Pattern
+
+1. Keep this repository as the source of truth.
+2. Register each skill directory in `workflows/longflow/skills` in your harness skill system.
+3. Ensure shared files remain reachable at `workflows/longflow/skills/_shared` and `shared/`.
+4. Use `workflows/longflow/longflow.config.json` to control model and routing policy.
+
+## Recommended Skill Registration Order
+
+1. grill-me
+2. council
+3. write-a-prd
+4. prd-to-issues
+5. issues-execution
+6. stabilisation
+
+## Compatibility Notes
+
+- If your harness supports named agents, map reviewer persona names directly.
+- If your harness does not support named agents, use prompt templates in `workflows/longflow/examples/prompts` and run role-equivalent generic subagent tasks.
+- If your harness has no parallel dispatch, run the same process sequentially.
+
+## Validation Checklist
+
+- Skills are visible in your harness.
+- Shared contract files are readable.
+- Config file validates using `npm run validate:config -- workflows\longflow\longflow.config.json`.
+- You can generate a kickoff prompt using `npm run prompt:kickoff -- workflows\longflow\longflow.config.json`.

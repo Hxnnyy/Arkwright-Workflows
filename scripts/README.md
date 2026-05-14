@@ -1,20 +1,35 @@
 # Scripts
 
-These scripts are optional helpers.
+These helpers are workflow-aware.
 
-## validate-config.mjs
+## Validate Config
 
-Validates longflow config JSON shape.
+```powershell
+npm run validate:config -- workflows\longflow\longflow.config.example.json
+npm run validate:config -- workflows\merge-train\merge-train.config.example.json
+```
 
-Usage:
+The validator detects Longflow and Merge Train config shapes from `workflow.name` and `workflow.type`.
 
-- node scripts/validate-config.mjs ./longflow.config.json
+## Generate Kickoff Prompt
 
-## generate-kickoff-prompt.mjs
+```powershell
+npm run prompt:kickoff -- workflows\longflow\longflow.config.example.json outputs\longflow-kickoff.txt
+npm run prompt:kickoff -- workflows\merge-train\merge-train.config.example.json outputs\merge-train-kickoff.txt
+```
 
-Renders an orchestrator kickoff prompt from config.
+## Heartbeat Watcher
 
-Usage:
+Optional helper for harnesses that support background shell processes:
 
-- node scripts/generate-kickoff-prompt.mjs ./longflow.config.json
-- node scripts/generate-kickoff-prompt.mjs ./longflow.config.json ./outputs/kickoff.txt
+```powershell
+npm run heartbeat:watch -- --state .\STATE.json --interval 60 --stale-after 900
+```
+
+The watcher emits a loud terminal reminder when heartbeat state is stale. It does not resume a stopped model by itself.
+
+## Markdown Link Validation
+
+```powershell
+npm run validate:links
+```
