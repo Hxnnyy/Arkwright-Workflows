@@ -22,6 +22,14 @@
 | Reviewer | Verdict | Blocking Count | Notes |
 | --- | --- | --- | --- |
 
+## Strict Review Bar
+
+- Structural simplification blockers:
+- File-size/decomposition blockers:
+- Spaghetti/branching blockers:
+- Boundary/abstraction/type-contract blockers:
+- Accepted residual strict-review risks:
+
 ## Residual Risks
 
 ## Manual Reviewer Notes

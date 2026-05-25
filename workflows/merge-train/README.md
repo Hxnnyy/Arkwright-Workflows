@@ -31,6 +31,7 @@ Use it when a parent branch is too large for ordinary review or when multiple ch
 - `../../shared/verification/acceptance-predicates.md`
 - `../../shared/verification/predicate-adequacy-review.md`
 - `../../shared/verification/test-adequacy-review.md`
+- `docs/STRICT_REVIEW_BAR.md`
 
 ## Durable State Pack
 
@@ -52,11 +53,12 @@ Templates are in `templates/` and shared templates are in `../../shared/template
 For each child PR:
 
 1. Audit against the child diff, branch state, and parent intent.
-2. Remediate blocking findings.
-3. Re-audit until a fresh verifier reports no blocking issues.
-4. Post the completion comment.
-5. Merge into the parent branch according to repo policy.
-6. Classify integration risk and update the ledger.
+2. Apply the strict review bar for structural simplification, file-size growth, branching complexity, ownership boundaries, and maintainability regressions.
+3. Remediate blocking findings.
+4. Re-audit until a fresh verifier reports no blocking issues.
+5. Post the completion comment.
+6. Merge into the parent branch according to repo policy.
+7. Classify integration risk and update the ledger.
 
 ## Parent Checkpoints
 
@@ -69,6 +71,8 @@ Parent checkpoints run:
 - when auth, security, database/schema, migrations, public APIs, background jobs, tests/config, or architecture boundaries are touched.
 
 Checkpoint reviewers focus on global coherence, duplicated abstractions, error-handling drift, public contract drift, inconsistent solutions to the same concept, schema/API/auth/security integration, composition-driven test gaps, files touched by multiple children, and accumulated residual risk.
+
+They also apply the strict review bar across the integrated parent branch, especially when child merges introduce large-file sprawl, scattered feature checks, abstraction drift, type-boundary churn, or repeated implementations of the same concept.
 
 ## Done Criteria
 

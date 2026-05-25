@@ -19,6 +19,8 @@ Checkpoint reviewers inspect the parent branch after configured merge triggers. 
 - files touched by multiple children,
 - accumulated residual risk.
 
+Apply `../../docs/STRICT_REVIEW_BAR.md` to the integrated parent branch. Escalate complexity that emerges across children, including duplicated abstractions, scattered special cases, files pushed past healthy size boundaries, type-boundary churn, and non-atomic orchestration.
+
 ## Output
 
 Write `PARENT_CHECKPOINT_REPORT.md` under `CHECKPOINTS/` and update the parent ledger and risk register.

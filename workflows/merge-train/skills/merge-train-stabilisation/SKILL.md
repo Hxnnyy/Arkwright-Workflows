@@ -10,6 +10,7 @@ Use after final parent closeout or after owner acceptance of residual risks.
 ## Duties
 
 - verify ledgers and risk register are current,
+- confirm strict-review residual risks are remediated, deferred, or explicitly accepted,
 - run final deterministic checks,
 - update operator docs and PR body,
 - ensure deferred children are explicit,

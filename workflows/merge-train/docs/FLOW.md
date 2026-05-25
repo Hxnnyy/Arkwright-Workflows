@@ -31,6 +31,7 @@ Copy templates into the delivery workspace and initialize:
 Each child PR must pass:
 
 - child audit,
+- strict review bar checks for structural simplification and maintainability regressions,
 - remediation for blocking findings,
 - fresh verifier re-audit,
 - deterministic checks,
@@ -40,6 +41,8 @@ Each child PR must pass:
 ## Parent Integration
 
 After child merge, classify risk and decide whether a checkpoint is required. High-risk children always trigger a checkpoint.
+
+Use `STRICT_REVIEW_BAR.md` during child audits, parent checkpoints, and final closeout. Treat structural regressions as blockers even when behavior appears correct.
 
 ## Final Parent Closeout
 
