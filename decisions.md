@@ -23,3 +23,9 @@ Rationale: existing harness registrations may expect those local paths. The new 
 Decision: keep script names stable and make them workflow-aware.
 
 Rationale: `npm run validate:config` and `npm run prompt:kickoff` remain simple operator commands while supporting both current workflow packs.
+
+## 2026-05-25: Merge Train Gets a Workflow-Local Strict Review Bar
+
+Decision: add `workflows/merge-train/docs/STRICT_REVIEW_BAR.md` and reference it from child audits, parent checkpoints, final closeout, stabilisation, and report templates.
+
+Rationale: Merge Train handles large parent branches where ordinary correctness review is insufficient. The stricter bar makes maintainability regressions, large-file sprawl, ad-hoc branching, weak type boundaries, misplaced logic, and missed structural simplifications explicit blockers unless accepted as residual risk.

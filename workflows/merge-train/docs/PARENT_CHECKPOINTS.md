@@ -16,6 +16,17 @@ Checkpoint reviewers inspect:
 - files touched by multiple child PRs,
 - residual risks accumulating across children.
 
+## Strict Review Bar
+
+Apply `STRICT_REVIEW_BAR.md` at every checkpoint. Pay special attention to complexity that only appears after multiple children are integrated:
+
+- child PRs adding similar branches in different places,
+- shared files growing past healthy boundaries,
+- repeated feature flags or nullable modes,
+- duplicated helpers or parallel abstractions,
+- type contracts becoming looser to accommodate local fixes,
+- partial-update flows that become brittle when composed.
+
 ## Triggers
 
 Run a checkpoint:
