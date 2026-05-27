@@ -89,8 +89,8 @@ Requirement:
 - Parent closes only when all required persona-model audits are no-blocking.
 - `PASS_WITH_NOTES` is not accepted at final closeout unless explicitly configured and accepted as residual risk.
 
-## Step 10: Stabilisation and Handover
+## Step 10: Handover
 
 Goal: freeze documentation, log follow-ups, and prepare safe handover.
 
-Skill: stabilisation
+Skill: longflow-orchestrator handover phase

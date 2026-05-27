@@ -26,6 +26,18 @@ Rationale: `npm run validate:config` and `npm run prompt:kickoff` remain simple 
 
 ## 2026-05-25: Merge Train Gets a Workflow-Local Strict Review Bar
 
-Decision: add `workflows/merge-train/docs/STRICT_REVIEW_BAR.md` and reference it from child audits, parent checkpoints, final closeout, stabilisation, and report templates.
+Decision: add `workflows/merge-train/docs/STRICT_REVIEW_BAR.md` and reference it from child audits, parent checkpoints, final closeout, handover, and report templates.
 
 Rationale: Merge Train handles large parent branches where ordinary correctness review is insufficient. The stricter bar makes maintainability regressions, large-file sprawl, ad-hoc branching, weak type boundaries, misplaced logic, and missed structural simplifications explicit blockers unless accepted as residual risk.
+
+## 2026-05-27: Repository Becomes Canonical Skill Source
+
+Decision: keep Arkwright workflow skills canonical in this repository and export them into `~/.agents/skills/arkwright-workflows` for harness discovery.
+
+Rationale: `.agents` is not a git repository, so direct installed-skill edits drift without review history. Repo-first iteration gives workflow changes normal diff, validation, and rollback behavior while still keeping Codex, Claude Code, and Gemini pointed at the same installed skill group.
+
+## 2026-05-27: Merge Train Uses One Public Skill
+
+Decision: collapse Merge Train helper skills into one public `merge-train` skill with internal references and templates.
+
+Rationale: users invoke Merge Train by intent and may start from no PR, an existing parent PR, existing children, or a partial train. One entry point can detect state and continue correctly; helper skills created unnecessary discovery ambiguity for phases that are rarely invoked directly.

@@ -1,83 +1,147 @@
 ---
 name: prd-to-issues
-description: Slice a parent PRD into parallel-safe child issues with deterministic predicates, routing policy, and wave-gate governance.
+description: Use to turn a PRD into independently grabbable GitHub issues with vertical slices, wave planning, and verifiable acceptance predicates.
 ---
 
 # PRD to Issues (Arkwright Longflow)
 
-Use this after parent PRD authoring.
+Convert a parent PRD into a set of vertical-slice child issues, each shipping with a deterministic acceptance predicate (`scripts/verify-issue-<n>.sh`) committed alongside.
 
-Shared references:
+## Hard rules
 
-- ../_shared/acceptance-predicates.md
-- ../_shared/reviewer-protocol.md
-- ../_shared/model-routing.md
-- ../_shared/templates/child-issue.md
-- ../_shared/templates/delivery-governance.md
-
-## Hard Rules
-
-1. Discover or bootstrap standards before slicing.
-2. Author predicates before child issue creation.
-3. If AC cannot be made deterministic, fix AC first.
-4. Parallel groups must have disjoint file ownership.
-5. Delivery governance must be recorded on the parent PRD.
+1. **Standards before slices.** Do not create child issues until repo delivery standards are discovered or bootstrapped. Parallel implementation without shared standards causes drift.
+2. **Predicates before issues.** Every child issue ships with `scripts/verify-issue-<n>.sh`, committed at issue-creation time, not implementer time. The predicate is the AC contract; the implementer cannot rewrite it to fit what they shipped.
+3. **Predicate authorship gate.** If you cannot make an AC deterministic, the AC is underspecified. Split, sharpen, or mark HITL — do not ship the issue with a hand-wave. Inability to write a predicate is a signal, not a workaround opportunity.
+4. **Disjoint files within a parallel group.** If two issues in the same wave share a file, merge them or move one to the next wave.
+5. **Continuous-mode is the downstream default.** Issues you create will be dispatched in continuous mode unless the user opts to interactive. Plan accordingly: every closure decision must be mechanical.
 
 ## Process
 
-### 1. Ingest Parent PRD
+### 1. Locate the PRD
 
-Extract:
+Fetch with `gh issue view <n> --comments` if not in context. The PRD is the source of truth for user intent, scope, and Definition of Done.
 
-- module map
-- wave candidates
-- definition of done items
-- risk tags
+### 2. Explore repo context
 
-### 2. Standards Check
+Inspect before slicing:
 
-Classify standards state as ESTABLISHED, PARTIAL, or MISSING.
+- `AGENTS.md`, `CLAUDE.md`, `README*`
+- `docs/Architecture.md`, `docs/Decisions.md`, `docs/Security.md`, ADRs, runbooks
+- `docs/DeliveryStandards.md`, contributing docs, testing docs
+- Package/test/build scripts
+- Existing implementation patterns relevant to the PRD
 
-If PARTIAL or MISSING, bootstrap minimal standards first.
+Use local files and `gh` first. Do not rely on memory for repo-specific rules.
 
-### 3. Slice Child Issues
+### 3. Discover or bootstrap delivery standards
 
-For each slice, set:
+Classify: `ESTABLISHED` | `PARTIAL` | `MISSING`.
 
-- title
-- AFK/HITL classification
-- blocked-by
-- files likely touched
-- lead model
-- required reviewers
+If `PARTIAL` or `MISSING`, bootstrap a compact `docs/DeliveryStandards.md` covering:
 
-### 4. Author Predicates
+- Architecture boundaries and dependency direction
+- Coding conventions that materially affect maintainability
+- Testing expectations and commands
+- Security defaults and trust-boundary expectations
+- UI/design conventions if UI is in scope
+- Documentation update rules
+- Cite-precedent-before-new-pattern rule
 
-Create scripts/verify-issue-<n>.<ext> for each child issue using deterministic checks.
+Commit standards before child issue creation. If the bootstrap is large or controversial, create a standards-bootstrap child issue and block all implementation slices on it.
 
-### 5. Build Waves
+### 4. Slice into tracer bullets
 
-Create wave plan with:
+Each child issue is a vertical slice cutting through every required layer end-to-end. Prefer many thin slices over few thick ones. Slice for parallel dispatch on disjoint files.
 
-- parallel groups
-- sequential tails
-- wave-gate required reviewers
+Slice flags:
 
-### 6. Record Delivery Governance
+- `AFK`: implementable without human input.
+- `HITL`: requires human interaction (architectural decision, design review).
 
-Write governance section on parent PRD using template.
+Prefer `AFK` where possible; do not hide genuine decision points.
 
-### 7. Create Issues
+### 5. Author predicates
 
-Create child issues in dependency-safe order.
+For each child, draft `scripts/verify-issue-<n>.sh` from `../_shared/templates/verify-issue.sh`. Each AC maps to a check of one of these types:
 
-## Output Contract
+- `failing-test-turns-green` (preferred)
+- `grep-zero`
+- `file-exists` / `file-content`
+- `type-compiles`
+- `predicate-script` (custom)
+- `diff-invariant`
+- `endpoint-probe`
 
-- child issue list
-- predicate script list
-- wave plan
-- delivery governance block
+Full spec: `../_shared/acceptance-predicates.md`.
 
-## Handoff
+The predicate script is committed alongside the issue body — it is part of the contract. If you cannot make an AC deterministic with one of these types, the AC is underspecified. Fix the AC; do not ship a soft predicate.
 
-Next skill: issues-execution
+### 6. Design delivery waves
+
+- Wave N depends only on waves `< N`.
+- Issues in the same parallel group have disjoint expected file sets.
+- Issues sharing files go into a sequential tail or a later wave.
+- Every wave gets a wave-gate audit plan.
+
+### 7. Assign reviewers and risks
+
+Reviewer roster, dispatch rules, and verdict schema: `../_shared/reviewer-protocol.md`.
+
+Risk tags: `quality`, `security`, `design`, `performance`, `docs`.
+
+Reviewer defaults:
+
+- `implementation-quality-reviewer`: every wave + final.
+- `documentation-reviewer`: every wave + final, unless explicitly justified.
+- `security-reviewer`: required when `security` risk present.
+- `product-design-reviewer`: required when `design` risk present.
+- `performance-reviewer`: required when `performance` risk present.
+
+`prd-to-issues` proposes the audit plan because this step has the clearest view of slice boundaries and delivery risks. The downstream `issues-execution` orchestrator enforces the plan and may add reviewers if actual diffs introduce new risk.
+
+### 8. Quiz the user
+
+Present the proposed breakdown before creating issues:
+
+- Child issues with title, AFK/HITL, blocked-by, files touched, predicate sketch.
+- Wave grouping with parallel/sequential model.
+- Standards status and any bootstrap.
+- Audit plan per wave + final closeout.
+
+Iterate until the user approves.
+
+### 9. Record Delivery Governance
+
+Record on the parent PRD using `../_shared/templates/delivery-governance.md`. Set `Continuous-mode default` to active for downstream dispatch. Prefer editing the parent body; otherwise add a parent issue comment.
+
+### 10. Create issues + commit predicates
+
+For each child, in dependency order:
+
+1. `gh issue create` with body from `../_shared/templates/child-issue.md`.
+2. Write `scripts/verify-issue-<n>.sh` from `../_shared/templates/verify-issue.sh` with the issue's specific checks.
+3. Commit the predicate script. One commit per issue is fine; or batch into a "predicate scaffolding" commit per wave with all that wave's predicates.
+
+The implementation will turn the predicates green; the predicate is the contract. Do not close the parent PRD.
+
+## Anti-patterns
+
+- Creating issues without committed predicate scripts.
+- Predicate scripts that "kind of" check the AC instead of pinning it precisely.
+- Treating missing standards as a user blocker instead of bootstrapping pragmatic defaults.
+- Slicing issues that share files while pretending they're parallel-safe.
+- Omitting audit plans and leaving reviewer choice to delivery-time guesswork.
+- Creating wave-gate as separate admin issues. Wave gates are parent comments + `STATE.json` entries.
+- Leaving an AC underspecified because "the implementer will figure it out". They will, and they will figure it out wrong.
+
+## See also
+
+- `../_shared/acceptance-predicates.md`
+- `../_shared/reviewer-protocol.md`
+- `../_shared/continuous-mode.md`
+- `../_shared/templates/`
+- `issues-execution` — the next skill in the pipeline.
+
+## Self-Improvement
+
+Log suboptimal outcomes to `observations.jsonl`. After 3+, propose an amendment.

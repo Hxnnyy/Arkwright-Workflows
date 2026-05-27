@@ -1,45 +1,141 @@
 # Acceptance Predicates
 
-Canonical shared guidance now lives at `../../../../shared/verification/acceptance-predicates.md`.
-
-Each child issue must have a deterministic acceptance predicate script. Predicate pass is an evidence floor, not a quality ceiling; closure also requires test evidence, predicate adequacy review, and no-blocking reviewer judgment.
+Mechanically verifiable acceptance criteria. Every child issue in the Arkwright Longflow set ships with a predicate script. A child cannot be closed unless its predicate exits 0 on the integration branch.
 
 ## Why
 
-Natural-language acceptance criteria are too easy to misinterpret. Predicate scripts make closure verifiable.
+Prose acceptance criteria are gameable. Predicates are not. By converting each AC into a deterministic script, child closure becomes a function of:
 
-## Authorship Rule
+```
+bash scripts/verify-issue-<n>.sh; echo $?
+```
 
-Predicates are authored during PRD-to-issues slicing, not by implementation agents.
+…rather than orchestrator judgment. This eliminates the most common failure mode in long autonomous runs: the implementer finishing what they think the AC means, the orchestrator agreeing under context pressure, and the issue closing without the AC actually being met.
 
-If acceptance cannot be translated into deterministic checks, the acceptance criteria are underspecified and must be fixed before implementation.
+## Authorship
 
-## Script Location
+Predicate scripts are authored by **`prd-to-issues`** at issue-creation time, **not** by the implementer. This means the AC contract is set before implementation and cannot be rewritten by the implementer to fit what they shipped.
 
-Use one script per issue, for example:
+If `prd-to-issues` cannot make an AC deterministic, the AC is underspecified. Split, sharpen, or mark HITL — do not ship the issue with a hand-wave. Inability to write a predicate is a signal, not a workaround opportunity.
 
-- scripts/verify-issue-<issue-number>.sh
-- scripts/verify-issue-<issue-number>.ps1
-- scripts/verify-issue-<issue-number>.mjs
+`issues-execution` enforces:
 
-Pick one format that matches the target repo execution environment.
+- The implementer subagent receives the predicate script as input but is **explicitly forbidden from modifying it**.
+- A diff that touches `scripts/verify-issue-<n>.sh` from an implementer dispatch is rejected.
 
-## Allowed Check Types
+## Location
 
-- failing test turns green
-- grep zero pattern
-- file exists or file content assertion
-- type compilation check
-- custom domain check script
-- invariant diff check
-- endpoint probe
+Each child issue has one script:
 
-## Implementer Guardrail
+```
+scripts/verify-issue-<issue-number>.sh
+```
 
-Implementation agents receive predicate scripts as contracts and must not modify them unilaterally.
+The script lives in the repo, is committed alongside the implementation, and is reviewable in diffs. It runs against a clean checkout and exits 0 when all ACs are met.
 
-If implementer output changes predicate scripts, reject the diff and reroute work.
+For Windows-only repos that lack bash, use `.ps1` instead — but bash via Git Bash / WSL / a Linux container is more portable. Default to bash.
 
-## Final Rollup
+## Allowed predicate types
 
-Before parent closeout, run all issue predicates. All must pass.
+A predicate script is a sequence of one or more checks. Each check must be deterministic on a clean checkout.
+
+### 1. Failing-test-turns-green (preferred)
+
+Commit a failing test first; the implementation makes it pass.
+
+```bash
+npm test -- --run path/to/new-feature.test.ts
+```
+
+This is the strongest predicate type. Use it whenever the AC describes observable behaviour.
+
+### 2. Grep-zero
+
+For removal-style criteria ("no `as any` in `src/api/`").
+
+```bash
+test "$(grep -rn 'as any' src/api/ | wc -l)" = "0"
+```
+
+### 3. File-exists / file-content
+
+For documentation or schema deliverables.
+
+```bash
+test -f docs/decisions/0042-new-auth-flow.md
+grep -q '## Decision' docs/decisions/0042-new-auth-flow.md
+```
+
+### 4. Type-compiles
+
+For type-system criteria.
+
+```bash
+npx tsc --noEmit -p tsconfig.json
+```
+
+### 5. Predicate-script (custom)
+
+For composite or domain-specific checks. Define an auxiliary script that exits 0 on success.
+
+```bash
+node scripts/check-rls-coverage.mjs
+```
+
+### 6. Diff-invariant
+
+For "no regression" criteria. Compare against a baseline.
+
+```bash
+test -z "$(git diff --stat origin/main -- 'src/legacy/**')"
+```
+
+### 7. Endpoint-probe (for backend ACs)
+
+For API-shape ACs that need a running service. Requires a deterministic local-dev fixture.
+
+```bash
+curl -fsS -X POST http://localhost:3000/api/x \
+  -H 'Content-Type: application/json' \
+  -d '{"valid": true}' >/dev/null
+```
+
+## Script contract
+
+Every script:
+
+- Starts with `set -euo pipefail`.
+- Has a comment block listing the issue number and each AC mapped to a check.
+- Runs each check sequentially.
+- On failure: prints `[verify-issue-<n>] FAIL: <which AC>` to stderr and exits 1.
+- On success: prints `[verify-issue-<n>] PASS: <which AC>` per check and `[verify-issue-<n>] all predicates passed` at the end.
+
+Template: `_shared/templates/verify-issue.sh`.
+
+## Close gate
+
+`issues-execution` enforces:
+
+```
+A child issue may not be closed unless:
+  bash scripts/verify-issue-<n>.sh
+  exits 0 on the integration branch.
+```
+
+This is non-negotiable in continuous mode.
+
+In addition, before final parent closeout, `issues-execution` runs the full predicate roll-up:
+
+```bash
+for f in scripts/verify-issue-*.sh; do bash "$f"; done
+```
+
+Every predicate must still pass at final closeout. A regression that breaks a previously-green predicate is a `BLOCKED` finding.
+
+## Maintenance
+
+Predicate scripts are durable artifacts. They survive past the PRD and become part of the regression suite. Optionally:
+
+- Wire them into CI as a `verify-sweep` job.
+- Promote stable predicates to permanent test files when they describe behaviour worth keeping.
+- Delete predicates only when their underlying AC is superseded by a newer issue's predicate.

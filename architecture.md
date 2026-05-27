@@ -11,12 +11,12 @@ Arkwright Workflows is organized as a workflow-pack repository.
 
 ## Current Workflow Packs
 
-- `workflows/longflow/`: planned delivery from rough intent to PRD, child issues, implementation waves, final closeout, and stabilisation.
+- `workflows/longflow/`: planned delivery from rough intent to PRD, child issues, implementation waves, final closeout, and handover.
 - `workflows/merge-train/`: large parent PR/branch audit, child PR remediation, parent integration checkpoints, and final manual-review readiness. Merge Train owns a workflow-local strict review bar for structural maintainability checks that are stronger than the shared reviewer baseline.
 
 ## Shared Primitives
 
-Shared primitives intentionally stay small and protocol-oriented. Workflow packs reference them rather than duplicating the same rules in full. This keeps continuous mode, hard blocks, heartbeat recovery, reviewer semantics, predicate/test adequacy, autonomy envelope, and course-correction behavior consistent.
+Shared primitives intentionally stay small and protocol-oriented. Workflow packs reference them rather than duplicating the same rules in full. This keeps continuous mode, hard blocks, heartbeat recovery, reviewer semantics, strict structural review, predicate/test adequacy, autonomy envelope, and course-correction behavior consistent.
 
 ## Scripts
 

@@ -6,14 +6,14 @@ Arkwright Workflows is a workflow-pack repository for robust AI-agent software d
 
 ## Which Workflow Should I Use?
 
-Use **Arkwright Longflow** when you are starting from rough intent or planned feature delivery. Longflow takes an idea through grilling, council convergence, PRD authoring, issue slicing, implementation waves, wave gates, final closeout, and stabilisation.
+Use **Arkwright Longflow** when you are starting from rough intent or planned feature delivery. Longflow takes an idea through grilling, council convergence, PRD authoring, issue slicing, implementation waves, wave gates, final closeout, and handover.
 
-Use **Arkwright Merge Train** when you are auditing and remediating a monster branch or PR, especially when many child PRs must be signed off and merged into a parent branch with rolling integration checkpoints.
+Use **Arkwright Merge Train** when you are preparing a feature branch or PR for merge and want a rigorous pre-merge audit/remediation loop. It can start before a PR exists, from an existing parent PR, from existing child PRs, or from a partially completed train.
 
 ## Workflows
 
 - [Longflow](workflows/longflow/README.md): planned implementation workflow for converting intent into shipped, audited work.
-- [Merge Train](workflows/merge-train/README.md): large-PR audit, remediation, child-merge, and parent-closeout workflow.
+- [Merge Train](workflows/merge-train/README.md): flexible pre-merge PR audit, optional child slicing, remediation loop, checkpoint, and parent-closeout workflow.
 
 Each workflow folder is self-contained. It includes its own README, skills, examples, templates, and config example. Workflows may reference shared protocol primitives in `shared/`, but users should not need to reconstruct a workflow from root-level docs.
 
@@ -27,6 +27,7 @@ Each workflow folder is self-contained. It includes its own README, skills, exam
 - [Course-correction protocol](shared/orchestration/course-correction-protocol.md)
 - [Reviewer protocol](shared/review/reviewer-protocol.md)
 - [Reviewer personas](shared/review/reviewer-personas.md)
+- [Strict review bar](shared/review/strict-review-bar.md)
 - [Verdict schema](shared/review/verdict-schema.md)
 - [Acceptance predicates](shared/verification/acceptance-predicates.md)
 - [Predicate adequacy review](shared/verification/predicate-adequacy-review.md)
@@ -73,7 +74,17 @@ Config paths changed from root-level `longflow.config.json` to workflow-local co
 ```powershell
 npm run validate:config -- workflows\longflow\longflow.config.example.json
 npm run validate:config -- workflows\merge-train\merge-train.config.example.json
+npm run validate:skills
+npm run validate:agents
 npm run validate:links
+```
+
+Refresh installed shared skills:
+
+```powershell
+npm run export:skills
+npm run export:agents
+npm run validate:install
 ```
 
 ## License

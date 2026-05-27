@@ -150,7 +150,8 @@ function validateMergeTrain(config, names) {
   requireString(config, "branchConventions.parentBranchPattern");
   requireString(config, "branchConventions.childBranchPattern");
   requireString(config, "branchConventions.mergePolicy");
-  requireBoolean(config, "branchConventions.noUnpromptedPush");
+  requireBoolean(config, "branchConventions.allowFeatureBranchPushes");
+  requireBoolean(config, "branchConventions.requireProtectedBranchSafety");
   requireString(config, "prConventions.parentPrLabel");
   requireString(config, "prConventions.childPrLabel");
   requireArray(config, "testCommands");

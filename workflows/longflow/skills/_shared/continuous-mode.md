@@ -1,71 +1,64 @@
 # Continuous Mode
 
-Canonical shared guidance now lives at `../../../../shared/orchestration/continuous-mode.md`.
-
-Continuous mode is the default execution style for long, end-to-end delivery.
+The canonical contract for long-running, hands-off orchestration. Referenced by all four longflow skills. Do not duplicate this contract elsewhere — link to it.
 
 ## Activation
 
-Continuous mode is active when any of the following is true:
+Continuous mode is **active** when any of:
 
-1. The user says run to completion, no pause, until done, or equivalent.
-2. tasks/CONTINUOUS_DIRECTIVE.md exists and mode is continuous.
-3. Prior run state is continuous and no explicit interactive override was given.
+1. The user's invoking message contains an unambiguous continuous directive: "until done", "until parent closed", "no pause", "AFK", "10+ hours", "run to completion", "don't stop", "fully autonomous", "go".
+2. A file `tasks/CONTINUOUS_DIRECTIVE.md` exists in the working directory with `mode: continuous`.
+3. The orchestrator was previously in continuous mode and has not seen an explicit `interactive mode` instruction since.
 
-If active, the orchestrator must write these files before dispatching subagents:
+Otherwise the skill runs in **interactive mode** with normal phase gates.
 
-- tasks/CONTINUOUS_DIRECTIVE.md
-- tasks/STATE.json
-- tasks/<date>-<slug>-execplan.md
+When continuous mode activates, the orchestrator MUST write `tasks/CONTINUOUS_DIRECTIVE.md` (template: `_shared/templates/CONTINUOUS_DIRECTIVE.md`) and `tasks/STATE.json` (template: `_shared/templates/STATE.json`) before any other action.
 
-## Behavior Contract
+## What changes
 
-In continuous mode:
+| Behaviour | Interactive | Continuous |
+|---|---|---|
+| Phase gates | Ask user "Continue to Phase N+1?" | Append decision to execplan, proceed |
+| Reviewer verdict surfacing | Orchestrator may surface ambiguous findings to user | Mapped to `PASS` / `BLOCKED` / `NOT_APPLICABLE` only |
+| Subagent return | Surface a summary | Append to execplan, run predicate, dispatch next |
+| `PASS_WITH_NOTES` at final closeout | Allowed with user check | Disallowed; mapped to `BLOCKED` |
+| Off-scope work discovered | Surface for user input | Open follow-up issue, continue |
+| AC ambiguity | Ask user | Hard-block (see `hard-block-conditions.md`) |
+| End-of-turn check-ins | Allowed | Suppressed via execplan |
 
-- The orchestrator does not stop for routine progress check-ins.
-- Phase transitions are logged in the execplan and execution continues.
-- Final closure does not accept PASS_WITH_NOTES.
-- Out-of-scope findings become follow-up issues unless they are blocking.
+## Re-read discipline
 
-## Structural Re-Read Rule
+The orchestrator MUST re-read `tasks/CONTINUOUS_DIRECTIVE.md` at the **start of every batch loop iteration** — not only after compaction. This is a structural beat, not an event-triggered one. The reason: an event-triggered re-read assumes the agent remembers to re-read after compaction, which is the same context that just got dropped.
 
-At the start of every batch iteration:
+The orchestrator MUST update `tasks/STATE.json` after every: subagent dispatch, subagent return, predicate run, reviewer dispatch, reviewer verdict, commit, wave transition, and hard-block fire.
 
-1. Re-read tasks/CONTINUOUS_DIRECTIVE.md.
-2. Re-read tasks/STATE.json.
-3. Resume from next_action.
+## Suppress, don't surface
 
-This is mandatory every batch, not only after compaction.
+Whenever the orchestrator is about to surface a question, summary, or check-in to the user that is not a hard-block:
 
-## Suppress, Decide, Continue
+1. Append the would-be message to the execplan as a `[CHECKIN-SUPPRESSED]` entry with full reasoning.
+2. Make the most defensible decision yourself, citing the entry in the execplan.
+3. Continue.
 
-If the orchestrator is about to ask the user a non-hard-block question:
+The only legitimate path to a user prompt in continuous mode is via a hard-block firing. See `hard-block-conditions.md`.
 
-1. Log a [CHECKIN-SUPPRESSED] entry to the execplan.
-2. Make the best defensible decision.
-3. Continue execution.
+## Resume on new turn
 
-## Resume Protocol
+If the orchestrator arrives in a conversation without context (post-compaction, post-restart, post-handoff):
 
-On context loss or conversation resume:
+1. Read `tasks/CONTINUOUS_DIRECTIVE.md` in full.
+2. Read `tasks/STATE.json` and resume from `next_action`.
+3. Read the tail of the execplan for recent decisions.
+4. Do not re-derive state from `gh issue list` or `git log` unless `STATE.json` is missing or malformed.
 
-1. Read tasks/CONTINUOUS_DIRECTIVE.md.
-2. Read tasks/STATE.json.
-3. Read tail of execplan.
-4. Continue from next_action.
+If `CONTINUOUS_DIRECTIVE.md` is present but `STATE.json` is missing or malformed, treat as state-corruption hard-block (condition matches `_shared/hard-block-conditions.md`).
 
-Do not rebuild state from memory when state files are available.
+## Exit
 
-## Exit Conditions
+Continuous mode ends only when:
 
-Continuous mode exits only when:
+1. **Complete**: parent PRD is closed and all required final reviewers returned `PASS` or `NOT_APPLICABLE` with `blocking_count == 0`.
+2. **Hard-block**: a condition from `hard-block-conditions.md` fired.
+3. **Explicit override**: user said `interactive mode` or equivalent during the run.
 
-1. Parent PRD is fully closed under closure rules.
-2. A hard-block condition fires.
-3. User explicitly switches to interactive mode.
-
-On exit, set mode in CONTINUOUS_DIRECTIVE.md to one of:
-
-- complete
-- hard_blocked
-- interactive_override
+On exit, mark `mode` in `CONTINUOUS_DIRECTIVE.md` as `complete` / `hard_blocked` / `interactive_override` (do not delete — it's part of the audit trail) and update `STATE.json`'s `status` to match. Then report once to the user.

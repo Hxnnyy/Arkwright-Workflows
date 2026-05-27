@@ -7,7 +7,7 @@ Use Merge Train when a parent PR contains multiple risky concepts that cannot be
 1. Identify the parent PR and branch.
 2. Create or ingest child PRs.
 3. Copy templates into the target delivery workspace.
-4. Start `merge-train-orchestrator`.
+4. Start `merge-train`.
 
 ## Example State
 

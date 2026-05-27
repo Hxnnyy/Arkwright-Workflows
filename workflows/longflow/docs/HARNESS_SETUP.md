@@ -16,11 +16,11 @@ Make each skill available in your preferred coding harness with minimal coupling
 ## Recommended Skill Registration Order
 
 1. grill-me
-2. council
-3. write-a-prd
-4. prd-to-issues
-5. issues-execution
-6. stabilisation
+2. longflow-orchestrator
+3. council
+4. write-a-prd
+5. prd-to-issues
+6. issues-execution
 
 ## Compatibility Notes
 

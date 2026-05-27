@@ -1,21 +1,22 @@
 # Arkwright Merge Train
 
-Arkwright Merge Train is a workflow for taking a large parent PR or branch through child PR audit, remediation, signed-off child merges, rolling parent integration checkpoints, and final parent manual-review readiness.
+Arkwright Merge Train is a workflow for taking a feature branch or parent PR through rigorous pre-merge audit, optional child slicing, remediation, signed-off child integration, rolling parent checkpoints, and final parent manual-review readiness.
 
 Use it when a parent branch is too large for ordinary review or when multiple child PRs must be integrated without losing global coherence.
 
 ## Flow
 
-1. Ingest parent PR, parent intent, and child PR list.
-2. If child PRs do not exist, create semantic child PRs around coherent slices.
-3. Prepare durable state and ledgers.
-4. For each child PR, dispatch audit/remediation, fix findings, and re-audit with a fresh verifier.
-5. Post child completion comment.
-6. Merge or close child into parent according to repo policy.
-7. Update parent PR body, parent integration ledger, risk register, and state.
-8. Run parent integration checkpoints after configured triggers.
-9. When all children are merged or explicitly deferred, run final parent closeout.
-10. Write the final manual-review packet.
+1. Detect the current state: no PR, parent-only PR, existing children, partial train, or final-ready candidate.
+2. If no parent PR exists, prepare or open one from the current feature branch to `main`/`master`.
+3. If child PRs do not exist and the parent is too large or mixed for reliable review, create semantic child PRs around coherent slices.
+4. Prepare durable state and ledgers.
+5. For each child PR or child slice, dispatch audit/remediation, fix findings, and re-audit with a fresh verifier.
+6. Post child completion comment.
+7. Merge or close child into parent according to repo policy.
+8. Update parent PR body, parent integration ledger, risk register, and state.
+9. Run parent integration checkpoints after configured triggers.
+10. When all children are merged or explicitly deferred, run final parent closeout.
+11. Write the final manual-review packet.
 
 ## Shared Dependencies
 
@@ -46,7 +47,7 @@ Create these files in the target delivery workspace:
 - `EXECPLAN.md`
 - `HEARTBEAT.md`
 
-Templates are in `templates/` and shared templates are in `../../shared/templates/`.
+The public skill is `skills/merge-train`. Templates are in `templates/` and shared templates are in `../../shared/templates/`.
 
 ## Child PR Loop
 

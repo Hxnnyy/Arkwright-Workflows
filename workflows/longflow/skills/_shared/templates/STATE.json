@@ -1,17 +1,15 @@
 {
-  "schema_version": "arkwright-longflow-1.0",
+  "schema_version": "arkwright-longflow-2.0",
   "mode": "continuous",
   "status": "in_progress",
   "parent_prd": null,
   "child_issues": [],
   "current_wave": 0,
-  "next_action": "phase_1_ingest",
+  "next_action": "phase_0_prepare_state",
   "waves": [],
-  "reviewer_verdicts": {
-    "final": {}
-  },
+  "reviewer_verdicts": {},
   "commits": [],
   "block_reason": null,
-  "started_at": "",
-  "updated_at": ""
+  "started_at": null,
+  "updated_at": null
 }

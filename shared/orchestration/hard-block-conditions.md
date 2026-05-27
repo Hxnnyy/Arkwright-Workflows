@@ -1,32 +1,59 @@
 # Hard-Block Conditions
 
-A hard block is the only normal reason to stop continuous execution.
+The finite list of conditions that justify pausing a continuous-mode orchestration to surface a user prompt. Anything not on this list is **not** a hard-block. The orchestrator must continue.
 
-## Red Conditions
+## The list
 
-- Product semantics are ambiguous and multiple plausible choices would materially change outcome.
-- Required credentials, environment access, or protected services are unavailable.
-- Reviewer findings contradict each other and no compatible fix is available.
-- Migration, data-loss, security-model, or irreversible destructive action requires owner approval.
-- Durable state is corrupt or inconsistent and cannot be safely repaired from logs.
-- Configured cycle caps are reached and the chair cannot make a safe disposition.
-- Repository policy forbids the next action without human approval.
+1. **Missing credential or secret** that the orchestrator cannot synthesize and that blocks repository access, GitHub API calls, test execution, or build/deploy steps.
 
-## Not Hard Blocks
+2. **GitHub authentication failure** persisting across at least 2 retries with backoff.
 
-- Desire to share progress.
-- Minor implementation uncertainty within scope.
-- Need to run extra tests.
-- Need to add missing regression tests.
-- Need to retry a failed command after a local fix.
-- Medium-risk course adjustment that can be proposed and verified under amber governance.
+3. **Implementation failure unresolved** by an implementation subagent after 3 corrective dispatches against the same child issue, where the failure is not a flake and the same root cause persists across attempts.
 
-## Hard-Block Record
+4. **Reviewer findings contradict each other** in a way that no single fix satisfies — fixing for reviewer A forces a regression for reviewer B, with no architectural seam available within the current PRD scope. Three iterations against the same finding category counts.
 
-When blocked, update state with:
+5. **Working tree in conflicted state** that the orchestrator cannot resolve via diff inspection, and that no targeted subagent dispatch can resolve.
 
-- `status: "hard_blocked"`
-- `block_reason`
-- `blocked_at`
-- `safe_next_step`
-- evidence and links to relevant files, tests, PRs, or reviewer reports
+6. **Predicate underspecified** to the point of unresolvable ambiguity — a child's `scripts/verify-issue-<n>.sh` cannot be made deterministic without product-level input that contradicts the parent PRD. (Rare. If `prd-to-issues` did its job, this should not happen.)
+
+7. **External-system dependency** the orchestrator has no path to satisfy — a third-party API key, a paid service, a manual deploy step, an out-of-band human approval, etc.
+
+8. **State corruption** — `tasks/CONTINUOUS_DIRECTIVE.md` is present but `tasks/STATE.json` is missing or malformed and cannot be reconstructed safely.
+
+## Not hard-blocks (continue)
+
+The following are explicitly **not** hard-blocks. The orchestrator must proceed:
+
+- "I think the user might want to weigh in on this."
+- "This change is bigger than expected."
+- "The reviewer has interesting suggestions worth discussing."
+- "I've completed a wave — should I continue?"
+- "This implementation has tradeoffs."
+- "I'm not 100% sure this is what they want."
+- "Compaction may have lost context."
+- "It's been a long time since the last user message."
+- "The next wave touches a sensitive area."
+- Any harness-default end-of-turn check-in language.
+
+When the impulse to stop arises and none of the eight conditions applies, the impulse itself is the bug. Append a `[CHECKIN-SUPPRESSED]` entry to the execplan, make the decision, continue.
+
+## Hard-block protocol
+
+When a hard-block fires:
+
+1. Update `tasks/STATE.json`:
+   - `status: "hard_blocked"`
+   - `block_reason: "<numbered condition above, e.g. 3>"`
+   - `updated_at: "<ISO-8601>"`
+
+2. Append a `[HARD_BLOCK]` entry to the execplan with:
+   - The numbered condition that fired.
+   - Last subagent output (or reviewer verdict, or git status).
+   - Relevant file paths.
+   - The minimal information required from the user to resume.
+
+3. Surface a single concise prompt to the user describing the block and what's needed.
+
+4. Do not attempt further work until the user responds. The Stop hook (if wired) will allow the stop because `status: hard_blocked`.
+
+A hard-block is the only legitimate exit from a continuous-mode loop short of completion.

@@ -68,7 +68,8 @@
     "parentBranchPattern": "feature/*",
     "childBranchPattern": "feature/*/child-*",
     "mergePolicy": "merge-child-branch-into-parent-after-verifier-pass",
-    "noUnpromptedPush": true
+    "allowFeatureBranchPushes": true,
+    "requireProtectedBranchSafety": true
   },
   "prConventions": {
     "parentPrLabel": "merge-train-parent",

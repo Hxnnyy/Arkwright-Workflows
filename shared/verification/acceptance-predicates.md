@@ -1,35 +1,141 @@
 # Acceptance Predicates
 
-Deterministic predicates are evidence floors, not quality ceilings. A predicate pass is required for closure, but it is not sufficient by itself.
+Mechanically verifiable acceptance criteria. Every child issue in the Arkwright Longflow set ships with a predicate script. A child cannot be closed unless its predicate exits 0 on the integration branch.
+
+## Why
+
+Prose acceptance criteria are gameable. Predicates are not. By converting each AC into a deterministic script, child closure becomes a function of:
+
+```
+bash scripts/verify-issue-<n>.sh; echo $?
+```
+
+…rather than orchestrator judgment. This eliminates the most common failure mode in long autonomous runs: the implementer finishing what they think the AC means, the orchestrator agreeing under context pressure, and the issue closing without the AC actually being met.
 
 ## Authorship
 
-Predicates should be authored before implementation where possible, normally during issue slicing or workflow setup. Implementers must not modify predicates unilaterally.
+Predicate scripts are authored by **`prd-to-issues`** at issue-creation time, **not** by the implementer. This means the AC contract is set before implementation and cannot be rewritten by the implementer to fit what they shipped.
 
-If a predicate is inadequate or misaligned, raise an amber-level course correction and strengthen the contract before closure.
+If `prd-to-issues` cannot make an AC deterministic, the AC is underspecified. Split, sharpen, or mark HITL — do not ship the issue with a hand-wave. Inability to write a predicate is a signal, not a workaround opportunity.
 
-## Closure Rule
+`issues-execution` enforces:
 
-Closure requires:
+- The implementer subagent receives the predicate script as input but is **explicitly forbidden from modifying it**.
+- A diff that touches `scripts/verify-issue-<n>.sh` from an implementer dispatch is rejected.
 
-- all required predicates pass,
-- relevant tests pass,
-- predicate adequacy review is acceptable,
-- test adequacy review is acceptable,
-- configured reviewers report no blocking findings.
+## Location
 
-## Reward-Hacking Risks
+Each child issue has one script:
 
-Reviewers must watch for:
+```
+scripts/verify-issue-<issue-number>.sh
+```
 
-- deleting or weakening tests,
-- satisfying grep checks without real behavior,
-- mock-only correctness,
-- broad `try/catch` masking,
-- config changes that reduce coverage,
-- overfitting to expected output,
-- bypassing real integration paths.
+The script lives in the repo, is committed alongside the implementation, and is reviewable in diffs. It runs against a clean checkout and exits 0 when all ACs are met.
 
-## Implementer Guardrail
+For Windows-only repos that lack bash, use `.ps1` instead — but bash via Git Bash / WSL / a Linux container is more portable. Default to bash.
 
-Predicate scripts are contracts. If an implementer changes one, reject the diff unless an amber-level governance decision explicitly approved the change.
+## Allowed predicate types
+
+A predicate script is a sequence of one or more checks. Each check must be deterministic on a clean checkout.
+
+### 1. Failing-test-turns-green (preferred)
+
+Commit a failing test first; the implementation makes it pass.
+
+```bash
+npm test -- --run path/to/new-feature.test.ts
+```
+
+This is the strongest predicate type. Use it whenever the AC describes observable behaviour.
+
+### 2. Grep-zero
+
+For removal-style criteria ("no `as any` in `src/api/`").
+
+```bash
+test "$(grep -rn 'as any' src/api/ | wc -l)" = "0"
+```
+
+### 3. File-exists / file-content
+
+For documentation or schema deliverables.
+
+```bash
+test -f docs/decisions/0042-new-auth-flow.md
+grep -q '## Decision' docs/decisions/0042-new-auth-flow.md
+```
+
+### 4. Type-compiles
+
+For type-system criteria.
+
+```bash
+npx tsc --noEmit -p tsconfig.json
+```
+
+### 5. Predicate-script (custom)
+
+For composite or domain-specific checks. Define an auxiliary script that exits 0 on success.
+
+```bash
+node scripts/check-rls-coverage.mjs
+```
+
+### 6. Diff-invariant
+
+For "no regression" criteria. Compare against a baseline.
+
+```bash
+test -z "$(git diff --stat origin/main -- 'src/legacy/**')"
+```
+
+### 7. Endpoint-probe (for backend ACs)
+
+For API-shape ACs that need a running service. Requires a deterministic local-dev fixture.
+
+```bash
+curl -fsS -X POST http://localhost:3000/api/x \
+  -H 'Content-Type: application/json' \
+  -d '{"valid": true}' >/dev/null
+```
+
+## Script contract
+
+Every script:
+
+- Starts with `set -euo pipefail`.
+- Has a comment block listing the issue number and each AC mapped to a check.
+- Runs each check sequentially.
+- On failure: prints `[verify-issue-<n>] FAIL: <which AC>` to stderr and exits 1.
+- On success: prints `[verify-issue-<n>] PASS: <which AC>` per check and `[verify-issue-<n>] all predicates passed` at the end.
+
+Template: `_shared/templates/verify-issue.sh`.
+
+## Close gate
+
+`issues-execution` enforces:
+
+```
+A child issue may not be closed unless:
+  bash scripts/verify-issue-<n>.sh
+  exits 0 on the integration branch.
+```
+
+This is non-negotiable in continuous mode.
+
+In addition, before final parent closeout, `issues-execution` runs the full predicate roll-up:
+
+```bash
+for f in scripts/verify-issue-*.sh; do bash "$f"; done
+```
+
+Every predicate must still pass at final closeout. A regression that breaks a previously-green predicate is a `BLOCKED` finding.
+
+## Maintenance
+
+Predicate scripts are durable artifacts. They survive past the PRD and become part of the regression suite. Optionally:
+
+- Wire them into CI as a `verify-sweep` job.
+- Promote stable predicates to permanent test files when they describe behaviour worth keeping.
+- Delete predicates only when their underlying AC is superseded by a newer issue's predicate.

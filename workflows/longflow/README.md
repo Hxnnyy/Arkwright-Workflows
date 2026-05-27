@@ -1,10 +1,10 @@
 # Arkwright Longflow
 
-Arkwright Longflow is the planned implementation workflow inside Arkwright Workflows. It turns rough intent into audited delivery through grilling, council convergence, PRD authoring, issue slicing, deterministic evidence, implementation waves, wave gates, final closeout, and stabilisation.
+Arkwright Longflow is the planned implementation workflow inside Arkwright Workflows. It turns rough intent into audited delivery through grilling, council convergence, PRD authoring, issue slicing, deterministic evidence, implementation waves, wave gates, final closeout, and handover.
 
 ## Flow
 
-1. Run `grill-me` to stress-test rough intent and produce a proposal.
+1. Run global `grill-me` to stress-test rough intent and produce a proposal.
 2. Human alignment pass fixes intent mismatches before council review.
 3. Run council Stage A across model aliases until unresolved Critical, High, and Medium disagreements are dispositioned.
 4. Run council Stage B across persona routing until no unresolved Critical, High, or Medium disagreements remain.
@@ -13,7 +13,7 @@ Arkwright Longflow is the planned implementation workflow inside Arkwright Workf
 7. Run `issues-execution` in continuous mode.
 8. Enforce wave-gate reviews after each wave.
 9. Enforce final closeout across required models and personas.
-10. Run `stabilisation` for post-closeout hardening.
+10. Finish with explicit handover notes, residual risks, and follow-up ownership.
 
 ## Shared Dependencies
 
@@ -70,7 +70,7 @@ npm run prompt:kickoff -- workflows\longflow\longflow.config.example.json
 ## Local Assets
 
 - `docs/`: operator documentation and Longflow runbooks.
-- `skills/`: Longflow skills.
+- `skills/`: Longflow skills. `longflow-orchestrator` is the broad entry point; phase skills remain directly invokable when needed.
 - `examples/`: Longflow configs and prompt examples.
 - `templates/`: optional workflow-local templates; shared canonical templates live in `../../shared/templates/`.
 - `longflow.config.example.json`: workflow config example.

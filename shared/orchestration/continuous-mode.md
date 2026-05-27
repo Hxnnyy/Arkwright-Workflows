@@ -1,40 +1,64 @@
 # Continuous Mode
 
-Continuous mode means the orchestrator keeps executing until closure or a hard block. It does not stop for routine status updates, weak uncertainty, or decisions that fall inside the configured autonomy envelope.
+The canonical contract for long-running, hands-off orchestration. Referenced by all four longflow skills. Do not duplicate this contract elsewhere — link to it.
 
-## Core Rules
+## Activation
 
-1. Re-read `CONTINUOUS_DIRECTIVE.md`, state, execplan tail, and heartbeat at the start of every batch iteration.
-2. Stop only for hard-block conditions.
-3. If a non-hard-block question is about to be asked, log `CHECKIN_SUPPRESSED`, make the best defensible decision, and continue.
-4. Update durable state after meaningful events: phase changes, child/wave completion, reviewer results, checkpoint results, course corrections, and hard blocks.
-5. Do not reconstruct state from memory when state files exist.
+Continuous mode is **active** when any of:
 
-## Batch Boundary Re-Read
+1. The user's invoking message contains an unambiguous continuous directive: "until done", "until parent closed", "no pause", "AFK", "10+ hours", "run to completion", "don't stop", "fully autonomous", "go".
+2. A file `tasks/CONTINUOUS_DIRECTIVE.md` exists in the working directory with `mode: continuous`.
+3. The orchestrator was previously in continuous mode and has not seen an explicit `interactive mode` instruction since.
 
-At every batch boundary, read:
+Otherwise the skill runs in **interactive mode** with normal phase gates.
 
-- `CONTINUOUS_DIRECTIVE.md`
-- `STATE.json` or workflow-specific state file
-- last 50-100 lines of `EXECPLAN.md`
-- `HEARTBEAT.md`
+When continuous mode activates, the orchestrator MUST write `tasks/CONTINUOUS_DIRECTIVE.md` (template: `_shared/templates/CONTINUOUS_DIRECTIVE.md`) and `tasks/STATE.json` (template: `_shared/templates/STATE.json`) before any other action.
 
-Then continue from `next_action` unless the status is hard-blocked.
+## What changes
 
-## Suppress, Decide, Continue
+| Behaviour | Interactive | Continuous |
+|---|---|---|
+| Phase gates | Ask user "Continue to Phase N+1?" | Append decision to execplan, proceed |
+| Reviewer verdict surfacing | Orchestrator may surface ambiguous findings to user | Mapped to `PASS` / `BLOCKED` / `NOT_APPLICABLE` only |
+| Subagent return | Surface a summary | Append to execplan, run predicate, dispatch next |
+| `PASS_WITH_NOTES` at final closeout | Allowed with user check | Disallowed; mapped to `BLOCKED` |
+| Off-scope work discovered | Surface for user input | Open follow-up issue, continue |
+| AC ambiguity | Ask user | Hard-block (see `hard-block-conditions.md`) |
+| End-of-turn check-ins | Allowed | Suppressed via execplan |
 
-When uncertainty is not a hard block:
+## Re-read discipline
 
-1. Add an execplan entry beginning with `CHECKIN_SUPPRESSED`.
-2. Record the decision, confidence, alternatives considered, and reversible next step.
-3. Update state.
-4. Continue execution.
+The orchestrator MUST re-read `tasks/CONTINUOUS_DIRECTIVE.md` at the **start of every batch loop iteration** — not only after compaction. This is a structural beat, not an event-triggered one. The reason: an event-triggered re-read assumes the agent remembers to re-read after compaction, which is the same context that just got dropped.
 
-## Closure
+The orchestrator MUST update `tasks/STATE.json` after every: subagent dispatch, subagent return, predicate run, reviewer dispatch, reviewer verdict, commit, wave transition, and hard-block fire.
+
+## Suppress, don't surface
+
+Whenever the orchestrator is about to surface a question, summary, or check-in to the user that is not a hard-block:
+
+1. Append the would-be message to the execplan as a `[CHECKIN-SUPPRESSED]` entry with full reasoning.
+2. Make the most defensible decision yourself, citing the entry in the execplan.
+3. Continue.
+
+The only legitimate path to a user prompt in continuous mode is via a hard-block firing. See `hard-block-conditions.md`.
+
+## Resume on new turn
+
+If the orchestrator arrives in a conversation without context (post-compaction, post-restart, post-handoff):
+
+1. Read `tasks/CONTINUOUS_DIRECTIVE.md` in full.
+2. Read `tasks/STATE.json` and resume from `next_action`.
+3. Read the tail of the execplan for recent decisions.
+4. Do not re-derive state from `gh issue list` or `git log` unless `STATE.json` is missing or malformed.
+
+If `CONTINUOUS_DIRECTIVE.md` is present but `STATE.json` is missing or malformed, treat as state-corruption hard-block (condition matches `_shared/hard-block-conditions.md`).
+
+## Exit
 
 Continuous mode ends only when:
 
-- workflow closure criteria are met,
-- a red-level hard block is reached,
-- the configured retry/cycle cap requires chair or human disposition,
-- the operator explicitly stops the run.
+1. **Complete**: parent PRD is closed and all required final reviewers returned `PASS` or `NOT_APPLICABLE` with `blocking_count == 0`.
+2. **Hard-block**: a condition from `hard-block-conditions.md` fired.
+3. **Explicit override**: user said `interactive mode` or equivalent during the run.
+
+On exit, mark `mode` in `CONTINUOUS_DIRECTIVE.md` as `complete` / `hard_blocked` / `interactive_override` (do not delete — it's part of the audit trail) and update `STATE.json`'s `status` to match. Then report once to the user.

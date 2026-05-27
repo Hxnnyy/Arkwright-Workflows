@@ -1,37 +1,74 @@
-# Execution Plan
+# Execplan: <slug>
 
-- Parent PRD: <issue-number>
-- Child range: <start>-<end>
-- Mode: continuous
-- Started at: <iso-8601>
+- **Parent PRD**: #<PRD-ISSUE-NUMBER>
+- **Child range**: #<START>–#<END>
+- **Mode**: continuous
+- **Started**: <ISO-8601 UTC>
+- **State files**: `tasks/CONTINUOUS_DIRECTIVE.md`, `tasks/STATE.json`
 
-## Continuous Contract Summary
+## Continuous-mode contract (re-read every batch)
 
-- Re-read directive each batch
-- Update STATE.json after each meaningful event
-- Suppress non-hard-block check-ins
-- Close only on deterministic evidence
+1. Do not stop until parent PRD closed or hard-block fires (see `_shared/hard-block-conditions.md`).
+2. Every child requires a passing `scripts/verify-issue-<n>.sh` before close.
+3. Reviewer verdicts use `_shared/reviewer-protocol.md` schema. Final close requires `blocking_count == 0` across required final reviewers; `PASS_WITH_NOTES` is not accepted at final.
+4. "Ask user" → `[CHECKIN-SUPPRESSED]` entry → decide and continue.
+5. Update `STATE.json` after every event.
+6. Implementers must not modify predicate scripts.
 
-## Wave Log
+## Wave log
 
-### Wave <n>
+### Wave 1
 
-- Dispatches:
-- Predicate results:
-- Commits:
-- Reviewer verdicts:
-- Notes:
+- Started: <ts>
+- Issues: #<n>, #<m>
+- Parallel group: [#<n>, #<m>]
+- Sequential tail: []
+- Required reviewers: implementation-quality, documentation, ...
 
-## Suppressed Check-ins
+#### Subagent dispatches
 
-- [CHECKIN-SUPPRESSED] <timestamp> <decision>
+- <ts> dispatch #<n> (files: [...])
+- <ts> return #<n>: <one-line summary>
+- <ts> predicate `scripts/verify-issue-<n>.sh`: exit 0
+- <ts> commit <sha> "<commit message>"
 
-## Hard Blocks
+#### Reviewer panel
 
-- [HARD_BLOCK] <timestamp> <condition> <required user input>
+- <ts> dispatch implementation-quality-reviewer (wave 1)
+- <ts> verdict: PASS, blocking_count: 0, summary: "..."
+- ...
 
-## Final Closeout
+#### Wave 1 close
 
-- Predicate rollup:
-- Final reviewer panel:
-- Closure decision:
+- <ts> all reviewers in {PASS, PASS_WITH_NOTES, NOT_APPLICABLE}
+- <ts> closed: #<n>, #<m>
+
+### Wave 2
+
+(repeat structure)
+
+## Suppressed check-ins
+
+- [CHECKIN-SUPPRESSED] <ts> Was about to ask whether to continue after wave 1; continuous mode → continued. Decision: dispatch wave 2 immediately.
+- [CHECKIN-SUPPRESSED] <ts> Reviewer note about <X> seemed worth surfacing; non-structural per `_shared/reviewer-protocol.md`. Decision: recorded for final sweep, continued.
+
+## Hard-blocks
+
+(none, or entries with [HARD_BLOCK] prefix citing the numbered condition)
+
+## Final closeout
+
+- <ts> ran full predicate roll-up: N predicates, all exit 0
+- <ts> ran full test suite: passed
+- <ts> dispatched final reviewer panel: [...]
+- <ts> verdicts: implementation-quality PASS, documentation PASS, security NOT_APPLICABLE, ...
+- <ts> blocking_count sum: 0
+
+## Closure
+
+- <ts> parent PRD #<n> closed
+- Total waves: N
+- Reviewer iterations: <count>
+- Predicate scripts run on close: N (all passed)
+- Commits: N
+- Mode transitioned to: complete

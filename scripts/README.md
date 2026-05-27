@@ -33,3 +33,22 @@ The watcher emits a loud terminal reminder when heartbeat state is stale. It doe
 ```powershell
 npm run validate:links
 ```
+
+## Skill and Agent Validation
+
+```powershell
+npm run validate:skills
+npm run validate:agents
+```
+
+`validate:skills` checks canonical repo skill entrypoints and stale helper discovery. `validate:agents` checks canonical reviewer personas under `~/.agents/agents` and verifies workflow config persona references.
+
+## Export Installed Skills
+
+```powershell
+npm run export:skills
+npm run export:agents
+npm run validate:install
+```
+
+The skill exporter refreshes `~/.agents/skills/arkwright-workflows` from this repo and repairs Codex/Claude skill links. The agent exporter repairs Claude reviewer-persona symlinks from `~/.agents/agents`. Gemini discovers `~/.agents/skills` directly, so no Gemini skill symlinks are created.

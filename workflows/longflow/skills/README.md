@@ -1,21 +1,20 @@
 # Skills Index
 
-Arkwright Longflow provides these skills:
+Arkwright Longflow exposes these public skills:
 
-1. grill-me
-2. council
-3. write-a-prd
-4. prd-to-issues
-5. issues-execution
-6. stabilisation
-7. codebase-quality-sweep
+1. `longflow-orchestrator`
+2. `council`
+3. `write-a-prd`
+4. `prd-to-issues`
+5. `issues-execution`
+6. `codebase-quality-sweep`
 
-Skills keep local compatibility references under `skills/_shared` and use canonical shared primitives from `../../../shared`.
+Use global `grill-me` before Longflow when rough intent needs stress testing. Longflow skills keep local compatibility references under `skills/_shared` and use canonical shared primitives from `../../../shared`.
 
 Recommended order:
 
-grill-me -> council -> write-a-prd -> prd-to-issues -> issues-execution -> stabilisation
+`grill-me` -> `longflow-orchestrator` -> `council` -> `write-a-prd` -> `prd-to-issues` -> `issues-execution`
 
 Optional quality-hardening path:
 
-codebase-quality-sweep -> prd-to-issues -> issues-execution -> stabilisation
+`codebase-quality-sweep` -> `prd-to-issues` -> `issues-execution`
