@@ -13,11 +13,11 @@
   "modelAliases": {
     "frontier-anthropic-strong": "Claude Fable 5",
     "frontier-anthropic-fast": "Claude Sonnet 5",
-    "frontier-openai-orchestrator": "GPT-5.5",
-    "frontier-openai": "GPT-5.4",
-    "frontier-openai-code": "GPT-5.3-Codex",
+    "frontier-openai-orchestrator": "GPT-5.6-Sol",
+    "frontier-openai": "GPT-5.6-Terra",
+    "frontier-openai-code": "GPT-5.6-Terra",
     "frontier-google": "Gemini 3.1 Pro",
-    "frontier-xai": "Grok-frontier",
+    "frontier-xai": "Grok 4.5",
     "frontier-oss": "OSS-frontier"
   },
   "models": {

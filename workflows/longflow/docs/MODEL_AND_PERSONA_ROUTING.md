@@ -10,7 +10,7 @@ The default opinionated profile defines:
 - `frontier-anthropic-fast` — Anthropic's fast frontier.
 - `frontier-openai-orchestrator` — OpenAI's orchestrator-grade model (high reasoning).
 - `frontier-openai` — OpenAI's general frontier.
-- `frontier-openai-code` — OpenAI's code-specialised frontier.
+- `frontier-openai-code` — OpenAI's implementer-grade frontier. No code-specialised variant exists in the GPT-5.6 line, so this currently resolves to the same model as `frontier-openai`; the alias stays separate so a future code model is a one-line bump.
 - `frontier-google` — Google's frontier.
 - `frontier-xai` — xAI's frontier.
 - `frontier-oss` — strongest open-source model, used as council chair.

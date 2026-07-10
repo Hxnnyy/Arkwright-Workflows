@@ -14,7 +14,7 @@ Standard aliases:
 - `frontier-anthropic-fast` — Anthropic's fast frontier (lead implementer for frontend, reviewer panels).
 - `frontier-openai-orchestrator` — OpenAI's orchestrator-grade model (high reasoning).
 - `frontier-openai` — OpenAI's general frontier (council, reviewer panels).
-- `frontier-openai-code` — OpenAI's code-specialised frontier (lead implementer for backend/security/docs).
+- `frontier-openai-code` — OpenAI's implementer-grade frontier (lead implementer for backend/security/docs). The GPT-5.6 line has no code-specialised variant, so this currently resolves to the same model as `frontier-openai`; the alias stays separate so a future code model is a one-line bump.
 - `frontier-google` — Google's frontier (council, reviewer panels).
 - `frontier-xai` — xAI's frontier (council fourth voice).
 - `frontier-oss` — strongest available open-source model (council chair, lab-independent).

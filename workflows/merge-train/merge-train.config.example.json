@@ -12,10 +12,10 @@
     "supportsParallelSubagents": true
   },
   "modelAliases": {
-    "frontier-openai-orchestrator": "GPT-5.5",
-    "frontier-openai": "GPT-5.4",
-    "frontier-openai-code": "GPT-5.3-Codex",
-    "frontier-anthropic-fast": "Claude Sonnet 4.6",
+    "frontier-openai-orchestrator": "GPT-5.6-Sol",
+    "frontier-openai": "GPT-5.6-Terra",
+    "frontier-openai-code": "GPT-5.6-Terra",
+    "frontier-anthropic-fast": "Claude Sonnet 5",
     "frontier-google": "Gemini 3.1 Pro"
   },
   "models": {
