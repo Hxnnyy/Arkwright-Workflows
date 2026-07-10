@@ -12,19 +12,25 @@
     "supportsParallelSubagents": true
   },
   "modelAliases": {
-    "frontier-openai-orchestrator": "GPT-5.6-Sol",
-    "frontier-openai": "GPT-5.6-Terra",
-    "frontier-openai-code": "GPT-5.6-Terra",
+    "frontier-openai-strong": "GPT-5.6-Sol",
+    "frontier-openai-fast": "GPT-5.6-Terra",
     "frontier-anthropic-fast": "Claude Sonnet 5",
     "frontier-google": "Gemini 3.1 Pro"
   },
   "models": {
-    "orchestratorModel": "frontier-openai-orchestrator",
-    "childAuditModel": "frontier-openai",
-    "childRemediationModel": "frontier-openai-code",
+    "childAuditModel": "frontier-openai-fast",
+    "childRemediationModel": "frontier-openai-fast",
     "childVerifierModel": "frontier-anthropic-fast",
-    "parentCheckpointModels": ["frontier-openai", "frontier-anthropic-fast", "frontier-google"],
-    "finalReviewerModels": ["frontier-openai", "frontier-anthropic-fast", "frontier-google"]
+    "parentCheckpointModels": [
+      "frontier-openai-fast",
+      "frontier-anthropic-fast",
+      "frontier-google"
+    ],
+    "finalReviewerModels": [
+      "frontier-openai-fast",
+      "frontier-anthropic-fast",
+      "frontier-google"
+    ]
   },
   "parentReviewerPersonas": [
     "architecture-coherence-reviewer",

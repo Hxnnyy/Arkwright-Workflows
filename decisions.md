@@ -53,3 +53,9 @@ Decision: five changes driven by the July 2026 harness/skills audit.
 5. `continuous-stop-guard` is wired run-scoped into the target project's settings at Phase 0 and removed at closure, instead of being a recommended global registration. Global always-on hooks contradict the operator's harness posture.
 
 Also: `grill-me` references now point at the model-invocable `grilling` skill (the global `grill-me` is a user-invoked wrapper other skills cannot reach), `grill-me` removed from stale-skill cleanup so the export no longer deletes the standalone skill's harness symlinks, anti-pattern lists deduplicated against hard rules, and Anthropic model aliases bumped (Fable 5 / Sonnet 5).
+
+## 2026-07-10: Symmetric Strong/Fast Alias Tiers; Orchestrator Model Fields Dropped
+
+Decision: OpenAI aliases follow the same two-tier convention as Anthropic — `frontier-openai-strong` (GPT-5.6-Sol) and `frontier-openai-fast` (GPT-5.6-Terra) — replacing `frontier-openai`, `frontier-openai-code`, and `frontier-openai-orchestrator`. The `models.orchestrator` (longflow) and `models.orchestratorModel` (merge-train) config fields are removed.
+
+Rationale: the orchestrator is whatever model the operator's harness session is already running; configuring it was dead weight and implied a dispatch that never happens. The strong/fast split maps cleanly onto how models are actually used: strong tiers appear only in council Stage A; fast tiers do implementation leads, reviewer panels, wave gates, and final closeout. OpenAI no longer ships a code-specialised frontier, so the -code alias lost its meaning.

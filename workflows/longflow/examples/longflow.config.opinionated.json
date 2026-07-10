@@ -13,18 +13,13 @@
   "modelAliases": {
     "frontier-anthropic-strong": "Claude Fable 5",
     "frontier-anthropic-fast": "Claude Sonnet 5",
-    "frontier-openai-orchestrator": "GPT-5.6-Sol",
-    "frontier-openai": "GPT-5.6-Terra",
-    "frontier-openai-code": "GPT-5.6-Terra",
+    "frontier-openai-strong": "GPT-5.6-Sol",
+    "frontier-openai-fast": "GPT-5.6-Terra",
     "frontier-google": "Gemini 3.1 Pro",
     "frontier-xai": "Grok 4.5",
     "frontier-oss": "OSS-frontier"
   },
   "models": {
-    "orchestrator": {
-      "alias": "frontier-openai-orchestrator",
-      "reasoning": "xhigh"
-    },
     "councilChair": {
       "alias": "frontier-oss",
       "reasoning": "high",
@@ -32,13 +27,13 @@
     },
     "councilStageA": [
       "frontier-anthropic-strong",
-      "frontier-openai",
+      "frontier-openai-strong",
       "frontier-google",
       "frontier-xai"
     ],
     "councilStageB": [
       "frontier-anthropic-fast",
-      "frontier-openai",
+      "frontier-openai-fast",
       "frontier-google",
       "frontier-xai"
     ]
@@ -46,35 +41,35 @@
   "routing": {
     "leadByIssueType": {
       "frontend": "frontier-anthropic-fast",
-      "backend": "frontier-openai-code",
-      "security": "frontier-openai-code",
-      "docs": "frontier-openai-code"
+      "backend": "frontier-openai-fast",
+      "security": "frontier-openai-fast",
+      "docs": "frontier-openai-fast"
     },
     "reviewersByIssueType": {
       "frontend": [
         "frontier-google",
-        "frontier-openai-code"
+        "frontier-openai-fast"
       ],
       "backend": [
-        "frontier-openai",
+        "frontier-openai-fast",
         "frontier-anthropic-fast"
       ],
       "security": [
-        "frontier-openai",
+        "frontier-openai-fast",
         "frontier-anthropic-fast"
       ],
       "docs": [
-        "frontier-openai",
+        "frontier-openai-fast",
         "frontier-anthropic-fast"
       ]
     },
     "waveGateReviewers": [
-      "frontier-openai",
+      "frontier-openai-fast",
       "frontier-anthropic-fast",
       "frontier-google"
     ],
     "finalCloseoutModels": [
-      "frontier-openai",
+      "frontier-openai-fast",
       "frontier-anthropic-fast",
       "frontier-google"
     ],

@@ -80,8 +80,6 @@ function validateCommon(config) {
 }
 
 function validateLongflow(config, names) {
-  requireAlias(config, names, "models.orchestrator.alias");
-  requireString(config, "models.orchestrator.reasoning");
   requireAlias(config, names, "models.councilChair.alias");
   requireString(config, "models.councilChair.reasoning");
   requireAliasArray(config, names, "models.councilStageA");
@@ -126,7 +124,6 @@ function validateLongflow(config, names) {
 function validateMergeTrain(config, names) {
   requireString(config, "workflow.type");
   for (const key of [
-    "models.orchestratorModel",
     "models.childAuditModel",
     "models.childRemediationModel",
     "models.childVerifierModel"

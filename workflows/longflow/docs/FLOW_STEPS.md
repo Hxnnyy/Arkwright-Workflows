@@ -75,7 +75,7 @@ Goal: validate each completed wave before closing its child issues.
 
 Required wave reviewers (alias-resolved from `routing.waveGateReviewers`):
 
-- `frontier-openai`
+- `frontier-openai-fast`
 - `frontier-anthropic-fast`
 - `frontier-google`
 

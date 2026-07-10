@@ -8,9 +8,8 @@ The default opinionated profile defines:
 
 - `frontier-anthropic-strong` — Anthropic's strongest reasoning model.
 - `frontier-anthropic-fast` — Anthropic's fast frontier.
-- `frontier-openai-orchestrator` — OpenAI's orchestrator-grade model (high reasoning).
-- `frontier-openai` — OpenAI's general frontier.
-- `frontier-openai-code` — OpenAI's implementer-grade frontier. No code-specialised variant exists in the GPT-5.6 line, so this currently resolves to the same model as `frontier-openai`; the alias stays separate so a future code model is a one-line bump.
+- `frontier-openai-strong` — OpenAI's strongest reasoning model (council Stage A heavyweight).
+- `frontier-openai-fast` — OpenAI's fast frontier (implementer leads, reviewer panels).
 - `frontier-google` — Google's frontier.
 - `frontier-xai` — xAI's frontier.
 - `frontier-oss` — strongest open-source model, used as council chair.
@@ -24,24 +23,24 @@ The default opinionated profile defines:
 ## Default Lead Routing
 
 - Frontend-heavy issue lead: `frontier-anthropic-fast`
-- Backend-heavy issue lead: `frontier-openai-code`
-- Security-heavy issue lead: `frontier-openai-code`
-- Docs-heavy issue lead: `frontier-openai-code`
+- Backend-heavy issue lead: `frontier-openai-fast`
+- Security-heavy issue lead: `frontier-openai-fast`
+- Docs-heavy issue lead: `frontier-openai-fast`
 
 ## Default Issue Review Routing
 
 - Frontend-heavy issue reviewers:
   - `frontier-google` for UI and UX quality
-  - `frontier-openai-code` for engineering robustness
+  - `frontier-openai-fast` for engineering robustness
 - Backend / docs / security-heavy issue reviewers:
-  - `frontier-openai` full review
+  - `frontier-openai-fast` full review
   - `frontier-anthropic-fast` full review
 
 ## Default Wave-Gate Panel
 
 All required:
 
-- `frontier-openai`
+- `frontier-openai-fast`
 - `frontier-anthropic-fast`
 - `frontier-google`
 
@@ -71,7 +70,7 @@ A PRD may explicitly include or exclude personas. **Exclusions require chair sig
 
 Models:
 
-- `frontier-openai`
+- `frontier-openai-fast`
 - `frontier-anthropic-fast`
 - `frontier-google`
 
