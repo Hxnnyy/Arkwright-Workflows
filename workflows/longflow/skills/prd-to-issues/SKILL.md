@@ -126,13 +126,9 @@ The implementation will turn the predicates green; the predicate is the contract
 
 ## Anti-patterns
 
-- Creating issues without committed predicate scripts.
-- Predicate scripts that "kind of" check the AC instead of pinning it precisely.
-- Treating missing standards as a user blocker instead of bootstrapping pragmatic defaults.
-- Slicing issues that share files while pretending they're parallel-safe.
-- Omitting audit plans and leaving reviewer choice to delivery-time guesswork.
-- Creating wave-gate as separate admin issues. Wave gates are parent comments + `STATE.json` entries.
-- Leaving an AC underspecified because "the implementer will figure it out". They will, and they will figure it out wrong.
+Everything the hard rules state positively is omitted here. One mistake the rules don't already cover:
+
+- Creating wave gates as separate admin issues. Wave gates are parent comments + `STATE.json` entries.
 
 ## See also
 
@@ -141,7 +137,3 @@ The implementation will turn the predicates green; the predicate is the contract
 - `../_shared/continuous-mode.md`
 - `../_shared/templates/`
 - `issues-execution` — the next skill in the pipeline.
-
-## Self-Improvement
-
-Log suboptimal outcomes to `observations.jsonl`. After 3+, propose an amendment.

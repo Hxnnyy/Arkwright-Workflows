@@ -28,9 +28,9 @@ When continuous mode activates, the orchestrator MUST write `tasks/CONTINUOUS_DI
 
 ## Re-read discipline
 
-The orchestrator MUST re-read `tasks/CONTINUOUS_DIRECTIVE.md` at the **start of every batch loop iteration** — not only after compaction. This is a structural beat, not an event-triggered one. The reason: an event-triggered re-read assumes the agent remembers to re-read after compaction, which is the same context that just got dropped.
+The orchestrator MUST re-read `tasks/CONTINUOUS_DIRECTIVE.md` at the **start of every wave** and on every resume-without-context. This is a structural beat, not an event-triggered one: an event-triggered re-read assumes the agent remembers to re-read after compaction, which is the same context that just got dropped.
 
-The orchestrator MUST update `tasks/STATE.json` after every: subagent dispatch, subagent return, predicate run, reviewer dispatch, reviewer verdict, commit, wave transition, and hard-block fire.
+The orchestrator MUST update `tasks/STATE.json` on every child status change, reviewer verdict, wave transition, and hard-block fire. Finer-grained events (individual dispatches, predicate runs, commits) belong in the execplan, not `STATE.json`.
 
 ## Suppress, don't surface
 

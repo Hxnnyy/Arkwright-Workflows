@@ -13,7 +13,7 @@ Orchestrate delivery of a parent PRD's child issue tree. You are the orchestrato
 2. **Hard-block list is finite.** See `../_shared/hard-block-conditions.md`. Anything not on it is not a stop condition.
 3. **Predicate gate.** A child does not close unless `bash scripts/verify-issue-<n>.sh` exits 0 on the integration branch.
 4. **Reviewer verdicts are structured.** See `../_shared/reviewer-protocol.md`. Final close requires `blocking_count == 0` and verdicts in `{PASS, NOT_APPLICABLE}` across all required final reviewers.
-5. **State files** (`tasks/CONTINUOUS_DIRECTIVE.md`, `tasks/STATE.json`, `tasks/<date>-<slug>-execplan.md`) are written before any subagent dispatch and updated after every meaningful event. Re-read `CONTINUOUS_DIRECTIVE.md` at the start of every batch loop iteration.
+5. **State files** (`tasks/CONTINUOUS_DIRECTIVE.md`, `tasks/STATE.json`, `tasks/<date>-<slug>-execplan.md`) are written before any subagent dispatch and updated on every child status change, reviewer verdict, wave transition, and hard-block. Re-read `CONTINUOUS_DIRECTIVE.md` at the start of every wave.
 6. **Suppress, don't surface.** Every "should I check in" impulse becomes a `[CHECKIN-SUPPRESSED]` execplan entry, then a decision, then continue.
 7. **Implementers do not modify predicate scripts.** Reject any diff to `scripts/verify-issue-<n>.sh` from an implementer dispatch.
 8. **Protected-branch safety.** Local commits are expected. Do not push directly to `main`/`master`, force-push, rewrite shared history, or open/merge PRs unless the workflow invocation or user explicitly authorizes that remote action.
@@ -47,7 +47,7 @@ Before any other action:
 2. Write `tasks/CONTINUOUS_DIRECTIVE.md` from `../_shared/templates/CONTINUOUS_DIRECTIVE.md` with parent PRD and child range filled in.
 3. Write `tasks/STATE.json` from `../_shared/templates/STATE.json`. Set `parent_prd`, `started_at`, `next_action: "phase_1_ingest"`.
 4. Create `tasks/<YYYY-MM-DD>-<slug>-execplan.md` from `../_shared/templates/execplan.md`. The continuous-mode contract summary is mandatory at the top.
-5. Confirm the Stop hook (`../_shared/hooks/continuous-stop-guard/`) is wired in your harness. If not, surface this once at start as a recommendation and proceed.
+5. Wire the run-scoped Stop guard **project-locally** (never globally): merge a `Stop` hook entry into the project's `.claude/settings.json` (or harness equivalent — see `../_shared/hooks/continuous-stop-guard/HOOK.md`) pointing at the installed `continuous-stop-guard.mjs`. The guard self-scopes — it only rejects stops while `tasks/CONTINUOUS_DIRECTIVE.md` says `mode: continuous` and `STATE.json` is `in_progress`. Some harnesses snapshot hooks at session start, so it may only arm from the next session; proceed either way.
 
 ## Phase 1: Ingest
 
@@ -199,22 +199,18 @@ Update `STATE.json`: `reviewer_verdicts.final.<reviewer> = ...` for each.
    - Any follow-up issues created from out-of-scope notes
 2. Update `STATE.json`: `status = "complete"`, `mode = "complete"`, `next_action = null`, `updated_at`.
 3. Update `tasks/CONTINUOUS_DIRECTIVE.md`: change `mode: continuous` to `mode: complete`. Do not delete — it's part of the audit trail.
-4. Append final summary to execplan.
-5. Report back to the user once.
+4. Remove the run-scoped `continuous-stop-guard` hook entry from the project's `.claude/settings.json` (or harness equivalent). Leave the settings file otherwise untouched.
+5. Append final summary to execplan.
+6. Report back to the user once.
 
 Do not push directly to `main`/`master`, force-push, rewrite shared history, or open/merge PRs unless explicitly authorized.
 
 ## Anti-patterns
 
-- Closing a child before its predicate exits 0.
-- Allowing an implementer to modify the predicate script.
-- Treating `PASS_WITH_NOTES` as acceptable for final closure.
-- Skipping the full predicate roll-up before final closeout.
-- Surfacing a check-in question in continuous mode for anything other than a hard-block.
-- Re-deriving state from `gh issue list` instead of reading `STATE.json` on resume.
-- Letting reviewer agents edit files (they are advisory-only).
+Everything the hard rules state positively is omitted here. Two mistakes the rules don't already cover:
+
 - Creating wave-gate issues instead of recording wave gates in parent comments + `STATE.json`.
-- Rewriting history, pushing protected branches, or opening/merging PRs without explicit permission.
+- Re-deriving state from `gh issue list` instead of reading `STATE.json` on resume.
 
 ## Relationship to other skills
 
@@ -231,7 +227,3 @@ Do not push directly to `main`/`master`, force-push, rewrite shared history, or 
 - `../_shared/reviewer-protocol.md`
 - `../_shared/state-files.md`
 - `../_shared/hooks/continuous-stop-guard/`
-
-## Self-Improvement
-
-Log suboptimal outcomes to `observations.jsonl`. After 3+, propose an amendment.

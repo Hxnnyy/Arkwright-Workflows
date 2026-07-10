@@ -65,7 +65,7 @@ If the cap is reached without convergence, the chair executes `convergence.atCap
 1. Chair force-dispositions all remaining open findings with logged rationale.
 2. Items the chair cannot confidently resolve are flagged as `escalate` and surfaced to the user before handoff.
 
-The cap is a safety net against runaway token spend, not a normal exit path. If the cap fires routinely, the proposal is too unstable for council and should be returned to grill-me.
+The cap is a safety net against runaway token spend, not a normal exit path. If the cap fires routinely, the proposal is too unstable for council and should be returned to grilling.
 
 ## Tie-Break Rule
 

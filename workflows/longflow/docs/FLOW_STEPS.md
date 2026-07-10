@@ -6,7 +6,7 @@ This file is the practical execution order for Arkwright Longflow.
 
 Goal: convert raw intent into a proposal with explicit decisions and explicit unresolved risks.
 
-Skill: grill-me
+Skill: grilling
 Output: proposal draft + decision tree summary + open-risk register.
 
 ## Step 2: Human Alignment Check

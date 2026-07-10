@@ -5,7 +5,7 @@ description: Run a two-stage LLM council convergence loop with model-level and p
 
 # Council (Arkwright Longflow)
 
-Use this skill after grill-me and before write-a-prd.
+Use this skill after grilling and before write-a-prd.
 
 Shared contract: ../_shared/council-protocol.md
 
@@ -62,7 +62,7 @@ If a stage hits its cap without natural convergence, the chair executes `converg
 2. Items the chair cannot confidently resolve are flagged `escalate` and surfaced to the user.
 3. Convergence status for the stage is recorded as `cap-reached-chair-resolved`.
 
-If caps fire routinely, the proposal is too unstable for council — return to grill-me.
+If caps fire routinely, the proposal is too unstable for council — return to grilling.
 
 ## Tie-Break Protocol
 

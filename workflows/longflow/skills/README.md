@@ -9,11 +9,11 @@ Arkwright Longflow exposes these public skills:
 5. `issues-execution`
 6. `codebase-quality-sweep`
 
-Use global `grill-me` before Longflow when rough intent needs stress testing. Longflow skills keep local compatibility references under `skills/_shared` and use canonical shared primitives from `../../../shared`.
+Use global `grilling` before Longflow when rough intent needs stress testing. Longflow skills keep local compatibility references under `skills/_shared` and use canonical shared primitives from `../../../shared`.
 
 Recommended order:
 
-`grill-me` -> `longflow-orchestrator` -> `council` -> `write-a-prd` -> `prd-to-issues` -> `issues-execution`
+`grilling` -> `longflow-orchestrator` -> `council` -> `write-a-prd` -> `prd-to-issues` -> `issues-execution`
 
 Optional quality-hardening path:
 

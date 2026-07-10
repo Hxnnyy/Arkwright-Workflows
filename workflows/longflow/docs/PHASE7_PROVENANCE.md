@@ -29,7 +29,7 @@ Original grill session archive id:
 
 Notable events captured:
 
-- Explicit /grill-me invocation in session timeline.
+- Explicit /grilling invocation in session timeline.
 - Decision-tree closure summary with resolved decisions and open risks.
 - Transition from grill output into formal PRD and issue-tree workflows.
 

@@ -15,7 +15,7 @@ Make each skill available in your preferred coding harness with minimal coupling
 
 ## Recommended Skill Registration Order
 
-1. grill-me
+1. grilling
 2. longflow-orchestrator
 3. council
 4. write-a-prd

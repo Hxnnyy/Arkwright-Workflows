@@ -1,10 +1,7 @@
 ---
 name: merge-train
-description: >
-  Use for rigorous pre-merge review of feature branches and large PRs: create
-  or ingest a parent PR, split reviewable child PRs when useful, recover partial
-  train state, audit and remediate in loops, run parent checkpoints, and prepare
-  the parent for human merge only after fresh reviewers find no blockers.
+description: Rigorous pre-merge audit/remediation loop for feature branches and large PRs, with child PR slicing, parent checkpoints, and fresh-reviewer closeout.
+disable-model-invocation: true
 ---
 
 # Merge Train
@@ -103,16 +100,3 @@ Confirm ledgers, risk register, PR body, child summaries, final packet, docs, an
 ## Recovery
 
 Read `references/state-recovery.md` when any state file, PR comment, label, or branch convention suggests a train is already underway. Prefer durable state, then PR evidence, then branch diffs. If evidence conflicts, choose the safest incomplete phase and rerun verification rather than assuming completion.
-
-## Anti-patterns
-
-- Reviewing one giant parent diff once and calling it done.
-- Letting child PRs merge with unresolved structural findings.
-- Trusting stale reviewer comments after remediation.
-- Treating `PASS_WITH_NOTES` as acceptable for architecture, type, security, public API, or test-integrity concerns.
-- Losing global coherence by fixing each child in isolation.
-- Reconstructing state from memory when files, labels, comments, or ledgers exist.
-
-## Self-Improvement
-
-Log suboptimal outcomes to `observations.jsonl`. After 3+, propose an amendment.

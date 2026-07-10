@@ -54,7 +54,7 @@ A cycle exits as `converged` when all hold:
 1. Chair force-dispositions remaining open findings with logged rationale.
 2. Items the chair cannot confidently resolve are flagged `escalate` and surfaced to the user.
 
-The cap is a safety net, not the expected exit path. If it fires routinely, return to grill-me.
+The cap is a safety net, not the expected exit path. If it fires routinely, return to grilling.
 
 ## Ballot Rules
 

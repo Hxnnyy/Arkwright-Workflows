@@ -4,7 +4,7 @@ Arkwright Longflow is the planned implementation workflow inside Arkwright Workf
 
 ## Flow
 
-1. Run global `grill-me` to stress-test rough intent and produce a proposal.
+1. Run global `grilling` to stress-test rough intent and produce a proposal.
 2. Human alignment pass fixes intent mismatches before council review.
 3. Run council Stage A across model aliases until unresolved Critical, High, and Medium disagreements are dispositioned.
 4. Run council Stage B across persona routing until no unresolved Critical, High, or Medium disagreements remain.

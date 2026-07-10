@@ -83,11 +83,11 @@ Personas (always all five at final closeout — this is the last gate, not a per
 - product-design-reviewer
 - security-reviewer
 
-Total required passes by default: 15.
+Each persona runs exactly once, distributed round-robin across the closeout models so every lab audits at least one domain. Total required passes by default: 5. If an audit returns `BLOCKED`, re-run that persona on a different closeout model after remediation. The full persona x model cross-product (15 audits) is reserved for PRDs with elevated risk tags (`security`, `data`, migration/irreversible change).
 
 Parent PRD closure condition:
 
-- Every required persona-model audit reports no blocking findings.
+- Every required persona audit reports no blocking findings.
 
 ## Editing Routing
 

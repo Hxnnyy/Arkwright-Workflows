@@ -46,23 +46,6 @@ function copyDir(source, target, transformFile) {
   }
 }
 
-function readPreservedFiles(target) {
-  const preserved = new Map();
-  for (const file of ["observations.jsonl"]) {
-    const filePath = path.join(target, file);
-    if (fs.existsSync(filePath)) preserved.set(file, fs.readFileSync(filePath, "utf8"));
-  }
-  return preserved;
-}
-
-function restorePreservedFiles(target, preserved) {
-  if (!preserved.has("observations.jsonl")) preserved.set("observations.jsonl", "");
-  preserved.set("CHANGELOG.md", "# Changelog\n\n- Generated from the Arkwright Workflows canonical repository.\n");
-  for (const [file, contents] of preserved.entries()) {
-    fs.writeFileSync(path.join(target, file), contents, "utf8");
-  }
-}
-
 function rewriteSkillSource(from, contents, workflow) {
   if (!from.endsWith("SKILL.md")) return contents;
   if (workflow === "longflow") return contents.replaceAll("../_shared/", "_shared/");
@@ -103,15 +86,12 @@ for (const skill of publicSkills) {
   if (!fs.existsSync(path.join(source, "SKILL.md"))) {
     fail(`Missing SKILL.md for ${skill.name} at ${source}`);
   }
-  const preserved = readPreservedFiles(target);
   rmInside(target);
   copyDir(source, target, (from, contents) => rewriteSkillSource(from, contents, skill.workflow));
 
   if (skill.workflow === "longflow") {
     copyDir(repoPath("workflows/longflow/skills/_shared"), path.join(target, "_shared"));
   }
-
-  restorePreservedFiles(target, preserved);
 }
 
 for (const stale of staleSkillNames) {

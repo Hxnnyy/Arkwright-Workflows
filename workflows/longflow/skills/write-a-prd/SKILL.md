@@ -29,7 +29,7 @@ Explore the repo to confirm their assertions and understand current state. Inspe
 
 Walk down each branch of the design tree. Resolve dependencies between decisions before moving on. Do not proceed until you can write a defensible Module Map.
 
-The `grill-me` skill is a good companion if the user wants their assumptions stress-tested.
+The `grilling` skill is a good companion if the user wants their assumptions stress-tested.
 
 ### 4. Module Map
 
@@ -75,20 +75,8 @@ The PRD is consumed by `prd-to-issues`, which:
 
 If your Definition of Done is weak, the child predicates will be weak, and child closure becomes orchestrator judgment under context pressure. Make the DoD strong here — it pays compound interest downstream.
 
-## Anti-patterns
-
-- User stories without verifiable hints.
-- Skipping the Module Map because "it's obvious".
-- Vague Out of Scope ("the obvious things").
-- File paths or code snippets in the PRD.
-- Definition-of-Done items that aren't mechanically checkable ("works well", "is clean", "feels right").
-
 ## See also
 
 - `../_shared/acceptance-predicates.md` — what counts as a mechanically verifiable predicate.
 - `../_shared/templates/prd.md` — canonical template.
 - `prd-to-issues` — the next skill in the pipeline.
-
-## Self-Improvement
-
-This skill follows the observe/inspect/amend/evaluate protocol in `~/.agents/skills/_meta/self-improve.md`. Log suboptimal outcomes to `observations.jsonl`. After 3+ entries, propose an amendment.

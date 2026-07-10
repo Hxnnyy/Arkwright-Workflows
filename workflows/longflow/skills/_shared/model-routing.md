@@ -49,7 +49,7 @@ Models:
 - `frontier-anthropic-fast`
 - `frontier-google`
 
-Personas per model (always all five at final closeout — this is the last gate, not a per-cycle loop):
+Personas (always all five at final closeout — this is the last gate, not a per-cycle loop):
 
 - implementation-quality-reviewer
 - documentation-reviewer
@@ -57,7 +57,9 @@ Personas per model (always all five at final closeout — this is the last gate,
 - product-design-reviewer
 - security-reviewer
 
-Total default final audits: 15.
+Assignment: each persona runs **exactly once**, distributed round-robin across the closeout models so every lab audits at least one domain. Total default final audits: 5.
+
+Escalation: if a final audit returns `BLOCKED`, re-run that persona on a different closeout model after remediation. Use the full persona x model cross-product (15 audits) only when the PRD carries elevated risk tags (`security`, `data`, migration/irreversible change).
 
 ## Persona Routing for Stage B
 

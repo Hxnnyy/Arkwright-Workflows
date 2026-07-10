@@ -22,9 +22,11 @@ On every Stop event:
 
 The hook script is `continuous-stop-guard.mjs` in this directory. It expects Node.js on PATH.
 
+**Register project-locally, not globally.** The `issues-execution` orchestrator wires this into the target project's settings at Phase 0 of a continuous run and removes it at parent closure. The guard self-scopes via `tasks/CONTINUOUS_DIRECTIVE.md`, so a stale entry is harmless, but run-scoped registration keeps harness config clean. Note: some harnesses snapshot hooks at session start — an entry added mid-session may only arm from the next session.
+
 ### Claude Code
 
-`~/.claude/settings.json`:
+`<project>/.claude/settings.json`:
 
 ```json
 {

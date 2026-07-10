@@ -1,6 +1,7 @@
 ---
 name: codebase-quality-sweep
-description: Use for systematic codebase quality audits, hardening, tech debt sweeps, issue-tree creation, and multi-dimension quality improvement.
+description: Systematic codebase quality audit, triage, issue-tree creation, and orchestrated hardening pass.
+disable-model-invocation: true
 ---
 
 # Codebase Quality Sweep (Arkwright Longflow)
@@ -195,7 +196,3 @@ Final summary:
 - `../_shared/reviewer-protocol.md`
 - `prd-to-issues` — for predicate-authorship discipline.
 - `issues-execution` — for Phase 4 orchestration.
-
-## Self-Improvement
-
-Log suboptimal outcomes to `observations.jsonl`. After 3+, propose an amendment.

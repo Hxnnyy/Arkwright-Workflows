@@ -1,6 +1,7 @@
 ---
 name: longflow-orchestrator
-description: Use to run Arkwright Longflow end-to-end from rough intent or grill-me output through council convergence, PRD authoring, issue slicing, implementation orchestration, wave gates, final closeout, and handover.
+description: End-to-end Arkwright Longflow: rough intent through council convergence, PRD, issue slicing, orchestrated implementation, wave gates, closeout, and handover.
+disable-model-invocation: true
 ---
 
 # Longflow Orchestrator
@@ -9,7 +10,7 @@ Run the whole Arkwright Longflow when the user wants a feature, plan, or rough i
 
 ## Hard rules
 
-1. **Start with stress-tested intent.** If the user has not already run `grill-me`, run an equivalent decision-tree stress test or explicitly ask to use `grill-me` when assumptions are still soft.
+1. **Start with stress-tested intent.** If the user has not already run `grilling`, run an equivalent decision-tree stress test or explicitly ask to use `grilling` when assumptions are still soft.
 2. **Centralize architecture decisions before implementation.** Resolve module boundaries, ownership, acceptance semantics, and risk posture before `issues-execution` begins. Do not leave implementers to invent architecture under stale delivery context.
 3. **Council before PRD when risk is non-trivial.** Use `council` for broad, ambiguous, high-risk, or multi-system work. Small well-scoped work may go straight to `write-a-prd` if the decision tree is already settled.
 4. **Predicates are authored before implementation.** `prd-to-issues` owns predicate scripts and file-ownership contracts. Implementers do not rewrite them.
@@ -20,7 +21,7 @@ Run the whole Arkwright Longflow when the user wants a feature, plan, or rough i
 
 1. **Intent stress test**
    - Ingest the user's goal, constraints, and current plan.
-   - Use `grill-me` when invoked or when the plan needs adversarial questioning.
+   - Use `grilling` when invoked or when the plan needs adversarial questioning.
    - Produce resolved decisions, open risks, assumptions, and a proposal handoff.
 
 2. **Council convergence**
@@ -53,23 +54,11 @@ Run the whole Arkwright Longflow when the user wants a feature, plan, or rough i
 - **Amber**: predicate changes, issue reslicing, public-interface changes, reviewer requirement changes, or accepted residual risk. Record a course-correction proposal and get independent verifier/chair concurrence.
 - **Red**: product ambiguity, missing required credentials, destructive irreversible action, data-loss/security tradeoff, irreconcilable reviewer contradiction, or state corruption. Hard block.
 
-## Anti-patterns
-
-- Skipping council because the implementation looks straightforward but the architecture is unsettled.
-- Creating implementation issues before the delivery standards and predicate contract exist.
-- Letting each implementer choose its own architecture, state model, or test strategy.
-- Treating passing predicates as sufficient for final quality.
-- Running final reviewers from summaries instead of the codebase.
-
 ## See also
 
-- `grill-me` — pre-flow stress testing.
+- `grilling` — pre-flow stress testing.
 - `council` — plan convergence.
 - `write-a-prd` — parent PRD authoring.
 - `prd-to-issues` — child slicing and predicates.
 - `issues-execution` — implementation orchestration.
 - `merge-train` — pre-merge PR audit loop for existing feature branches.
-
-## Self-Improvement
-
-Log suboptimal outcomes to `observations.jsonl`. After 3+, propose an amendment.

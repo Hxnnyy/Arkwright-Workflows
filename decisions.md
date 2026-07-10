@@ -41,3 +41,15 @@ Rationale: `.agents` is not a git repository, so direct installed-skill edits dr
 Decision: collapse Merge Train helper skills into one public `merge-train` skill with internal references and templates.
 
 Rationale: users invoke Merge Train by intent and may start from no PR, an existing parent PR, existing children, or a partial train. One entry point can detect state and continue correctly; helper skills created unnecessary discovery ambiguity for phases that are rarely invoked directly.
+
+## 2026-07-10: Model-Capability Recalibration Pass
+
+Decision: five changes driven by the July 2026 harness/skills audit.
+
+1. Entry-point skills (`longflow-orchestrator`, `merge-train`, `codebase-quality-sweep`) set `disable-model-invocation: true` with shortened human-facing descriptions. They are invoked deliberately by the operator; removing their descriptions from always-on harness context is free. Chain skills (`council`, `write-a-prd`, `prd-to-issues`, `issues-execution`) stay model-invocable because the orchestrator dispatches them.
+2. The self-improvement footer/observations.jsonl protocol is retired from skill sources and the export script. Four months of empty observation logs showed the trigger never fires; feedback now flows through operator review and this decisions log.
+3. Continuous-mode ceremony trimmed: `CONTINUOUS_DIRECTIVE.md` re-reads move from every batch iteration to every wave; `STATE.json` updates move from every event to child status changes, reviewer verdicts, wave transitions, and hard-blocks. Current models hold contracts across far longer spans; finer-grained events live in the execplan.
+4. Default final closeout drops from the 15-audit persona x model cross-product to 5 audits (each persona once, round-robin across closeout models). The cross-product is reserved for elevated-risk PRDs. Escalation on `BLOCKED` re-runs the persona on a different model.
+5. `continuous-stop-guard` is wired run-scoped into the target project's settings at Phase 0 and removed at closure, instead of being a recommended global registration. Global always-on hooks contradict the operator's harness posture.
+
+Also: `grill-me` references now point at the model-invocable `grilling` skill (the global `grill-me` is a user-invoked wrapper other skills cannot reach), `grill-me` removed from stale-skill cleanup so the export no longer deletes the standalone skill's harness symlinks, anti-pattern lists deduplicated against hard rules, and Anthropic model aliases bumped (Fable 5 / Sonnet 5).

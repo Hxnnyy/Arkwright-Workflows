@@ -48,7 +48,6 @@ export const publicSkills = [
 ];
 
 export const staleSkillNames = [
-  "grill-me",
   "stabilisation",
   "merge-train-orchestrator",
   "child-pr-audit-remediate",
