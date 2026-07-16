@@ -59,3 +59,9 @@ Also: `grill-me` references now point at the model-invocable `grilling` skill (t
 Decision: OpenAI aliases follow the same two-tier convention as Anthropic — `frontier-openai-strong` (GPT-5.6-Sol) and `frontier-openai-fast` (GPT-5.6-Terra) — replacing `frontier-openai`, `frontier-openai-code`, and `frontier-openai-orchestrator`. The `models.orchestrator` (longflow) and `models.orchestratorModel` (merge-train) config fields are removed.
 
 Rationale: the orchestrator is whatever model the operator's harness session is already running; configuring it was dead weight and implied a dispatch that never happens. The strong/fast split maps cleanly onto how models are actually used: strong tiers appear only in council Stage A; fast tiers do implementation leads, reviewer panels, wave gates, and final closeout. OpenAI no longer ships a code-specialised frontier, so the -code alias lost its meaning.
+
+## 2026-07-16: Longflow Uses a Bounded, Reaped Agent Pool
+
+Decision: Issues Execution records every spawned agent in durable state, reserves two thread slots, defaults child delegation to zero, reconciles the pool before dispatch and after compaction, and closes consumed implementers and reviewers promptly. Agent-limit failures receive one cleanup/retry before concurrency is reduced or execution falls back to sequential work.
+
+Rationale: completed-but-open threads can continue occupying harness capacity and accumulate as stale UI entries. Treating return, consumption, and closure as separate lifecycle states prevents slot exhaustion, preserves room for corrective and review work, and makes recovery after context compaction deterministic.

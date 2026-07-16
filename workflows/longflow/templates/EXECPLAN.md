@@ -9,6 +9,7 @@ Append-only execution trace.
 - Phase:
 - Current item:
 - Next action:
+- Agent pool:
 
 ## Log
 
@@ -17,4 +18,5 @@ Append-only execution trace.
 - Event:
 - Evidence:
 - Decision:
+- Agent lifecycle:
 - Next action:

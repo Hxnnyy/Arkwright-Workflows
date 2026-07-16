@@ -1,11 +1,17 @@
 {
-  "schema_version": "arkwright-longflow-2.0",
+  "schema_version": "arkwright-longflow-2.1",
   "mode": "continuous",
   "status": "in_progress",
   "parent_prd": null,
   "child_issues": [],
   "current_wave": 0,
   "next_action": "phase_0_prepare_state",
+  "agent_pool": {
+    "max_threads": null,
+    "reserved_slots": 2,
+    "last_reconciled_at": null,
+    "threads": []
+  },
   "waves": [],
   "reviewer_verdicts": {},
   "commits": [],

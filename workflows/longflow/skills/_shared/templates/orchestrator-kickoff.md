@@ -19,6 +19,7 @@ Deliver the parent PRD to closure using continuous mode and deterministic gates.
 2. Do not mutate protected environment surfaces.
 3. Delegate implementation by default.
 4. Stop only for hard-block conditions.
+5. Apply `_shared/agent-lifecycle.md`: reserve two slots, default descendants to zero, and close consumed threads.
 
 ## Routing
 
@@ -29,14 +30,16 @@ Deliver the parent PRD to closure using continuous mode and deterministic gates.
 
 ## Loop
 
-1. Dispatch implementer.
-2. Verify diff scope.
-3. Run predicate.
-4. Run required reviewers.
-5. Fix BLOCKED findings.
-6. Repeat until issue closure rules pass.
-7. Run wave gate.
-8. Continue to next issue.
+1. Reconcile and reap the current run's tracked agents.
+2. Dispatch within the normal pool budget and record each agent ID.
+3. Verify diff scope.
+4. Run predicate.
+5. Consume the result; steer once or close the implementer.
+6. Run required reviewers and close each after storing its verdict.
+7. Fix BLOCKED findings through the same tracked lifecycle.
+8. Repeat until issue closure rules pass.
+9. Reconcile at the wave gate.
+10. Continue to next issue.
 
 ## Final Closure
 

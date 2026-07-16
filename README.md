@@ -20,6 +20,7 @@ Each workflow folder is self-contained. It includes its own README, skills, exam
 ## Shared Protocol Primitives
 
 - [Continuous mode](shared/orchestration/continuous-mode.md)
+- [Agent lifecycle](shared/orchestration/agent-lifecycle.md)
 - [Hard-block conditions](shared/orchestration/hard-block-conditions.md)
 - [Heartbeat protocol](shared/orchestration/heartbeat-protocol.md)
 - [State files](shared/orchestration/state-files.md)

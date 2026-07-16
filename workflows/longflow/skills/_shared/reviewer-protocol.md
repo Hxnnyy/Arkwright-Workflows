@@ -55,6 +55,7 @@ Every reviewer must return exactly this JSON shape:
 - `predicate_adequacy == "inadequate"` or `test_adequacy == "inadequate"` is blocking unless the scope truly has no predicates/tests to evaluate.
 
 If a reviewer returns malformed JSON, the orchestrator re-dispatches once with an explicit "return only the schema" instruction. A second malformed return is treated as `BLOCKED` with a synthetic finding "reviewer output unparseable".
+Use the same reviewer thread for that one correction when possible. Once a valid or final malformed verdict is stored, mark the result consumed and close the reviewer per `_shared/agent-lifecycle.md`.
 
 ## Wave-gate closure
 
@@ -117,5 +118,6 @@ Each reviewer dispatch includes:
 - Test commands and results.
 - Predicate run summaries (which predicates passed, exit codes).
 - Explicit instruction: advisory-only, do not edit files.
+- Explicit instruction: `Delegation budget: 0. Do not spawn subagents.`
 - Explicit instruction: return only the verdict schema, nothing else.
 - For final closeout: explicit instruction to verify the PRD from the codebase, not from implementation reports, and that `PASS_WITH_NOTES` is not accepted (mapped to `BLOCKED`).

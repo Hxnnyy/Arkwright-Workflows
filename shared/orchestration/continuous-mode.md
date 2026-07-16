@@ -30,7 +30,7 @@ When continuous mode activates, the orchestrator MUST write `tasks/CONTINUOUS_DI
 
 The orchestrator MUST re-read `tasks/CONTINUOUS_DIRECTIVE.md` at the **start of every wave** and on every resume-without-context. This is a structural beat, not an event-triggered one: an event-triggered re-read assumes the agent remembers to re-read after compaction, which is the same context that just got dropped.
 
-The orchestrator MUST update `tasks/STATE.json` on every child status change, reviewer verdict, wave transition, and hard-block fire. Finer-grained events (individual dispatches, predicate runs, commits) belong in the execplan, not `STATE.json`.
+The orchestrator MUST update `tasks/STATE.json` on every child status change, reviewer verdict, wave transition, hard-block fire, and agent-registry transition. Agent lifecycle is durable recovery state; detailed dispatch results, predicate runs, and commits remain in the execplan.
 
 ## Suppress, don't surface
 
@@ -49,7 +49,8 @@ If the orchestrator arrives in a conversation without context (post-compaction, 
 1. Read `tasks/CONTINUOUS_DIRECTIVE.md` in full.
 2. Read `tasks/STATE.json` and resume from `next_action`.
 3. Read the tail of the execplan for recent decisions.
-4. Do not re-derive state from `gh issue list` or `git log` unless `STATE.json` is missing or malformed.
+4. Reconcile and reap `agent_pool.threads` per `agent-lifecycle.md`.
+5. Resume from `next_action`; do not re-derive state from `gh issue list` or `git log` unless `STATE.json` is missing or malformed.
 
 If `CONTINUOUS_DIRECTIVE.md` is present but `STATE.json` is missing or malformed, treat as state-corruption hard-block (condition matches `_shared/hard-block-conditions.md`).
 

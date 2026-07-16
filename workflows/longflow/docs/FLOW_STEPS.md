@@ -64,6 +64,8 @@ Skill: issues-execution
 Rules:
 
 - Delegate implementation by default.
+- Track every agent ID, reserve two pool slots, and default descendant delegation to zero.
+- Consume and close returned agents before replacement dispatches; reconcile after compaction and at wave gates.
 - Verify each issue with predicate scripts and relevant tests.
 - Treat predicates as evidence floors, not quality ceilings.
 - Apply predicate adequacy, test adequacy, and reviewer loops on blocking findings.

@@ -1,6 +1,6 @@
 ---
 name: longflow-orchestrator
-description: End-to-end Arkwright Longflow: rough intent through council convergence, PRD, issue slicing, orchestrated implementation, wave gates, closeout, and handover.
+description: "End-to-end Arkwright Longflow: rough intent through council convergence, PRD, issue slicing, orchestrated implementation, wave gates, closeout, and handover."
 disable-model-invocation: true
 ---
 
@@ -16,6 +16,7 @@ Run the whole Arkwright Longflow when the user wants a feature, plan, or rough i
 4. **Predicates are authored before implementation.** `prd-to-issues` owns predicate scripts and file-ownership contracts. Implementers do not rewrite them.
 5. **Continuous delivery is the default once execution starts.** After `issues-execution` begins, continue until parent closure or a finite hard block.
 6. **Fresh reviewers verify from code.** Final approval requires fresh reviewers inspecting the codebase and evidence, not trusting implementation reports.
+7. **Execution uses a bounded agent pool.** `issues-execution` owns thread tracking, reserves corrective capacity, defaults children to zero descendant delegation, and closes consumed agents per `../_shared/agent-lifecycle.md`.
 
 ## Flow
 
@@ -42,6 +43,7 @@ Run the whole Arkwright Longflow when the user wants a feature, plan, or rough i
 5. **Execution**
    - Use `issues-execution`.
    - Run in continuous mode unless the user explicitly asks for interactive mode.
+   - Treat agent reconciliation and closure as delivery gates, including after compaction or resume.
    - Verify each child with predicates, tests, diff inspection, commits, wave-gate reviewers, and final parent closeout.
 
 6. **Handover**
@@ -61,4 +63,5 @@ Run the whole Arkwright Longflow when the user wants a feature, plan, or rough i
 - `write-a-prd` — parent PRD authoring.
 - `prd-to-issues` — child slicing and predicates.
 - `issues-execution` — implementation orchestration.
+- `../_shared/agent-lifecycle.md` — execution concurrency and cleanup contract.
 - `merge-train` — pre-merge PR audit loop for existing feature branches.

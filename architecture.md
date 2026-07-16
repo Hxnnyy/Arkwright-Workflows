@@ -16,7 +16,7 @@ Arkwright Workflows is organized as a workflow-pack repository.
 
 ## Shared Primitives
 
-Shared primitives intentionally stay small and protocol-oriented. Workflow packs reference them rather than duplicating the same rules in full. This keeps continuous mode, hard blocks, heartbeat recovery, reviewer semantics, strict structural review, predicate/test adequacy, autonomy envelope, and course-correction behavior consistent.
+Shared primitives intentionally stay small and protocol-oriented. Workflow packs reference them rather than duplicating the same rules in full. This keeps continuous mode, bounded agent lifecycle, hard blocks, heartbeat recovery, reviewer semantics, strict structural review, predicate/test adequacy, autonomy envelope, and course-correction behavior consistent.
 
 ## Scripts
 

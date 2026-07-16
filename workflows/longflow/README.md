@@ -20,6 +20,7 @@ Arkwright Longflow is the planned implementation workflow inside Arkwright Workf
 Longflow uses these shared primitives:
 
 - `../../shared/orchestration/continuous-mode.md`
+- `../../shared/orchestration/agent-lifecycle.md`
 - `../../shared/orchestration/hard-block-conditions.md`
 - `../../shared/orchestration/heartbeat-protocol.md`
 - `../../shared/orchestration/state-files.md`
@@ -49,9 +50,10 @@ Agents may raise `COURSE_CORRECTION_PROPOSAL` at any time. They may not silently
 ## Continuity Rules
 
 - State is updated after meaningful events.
+- Every spawned agent is tracked; consumed threads are closed and two slots remain reserved for corrections and reviews.
 - The continuous directive is re-read at batch boundaries.
 - Non-hard-block check-ins are suppressed, logged, and execution continues.
-- On resume, read directive, state, execplan tail, and heartbeat before acting.
+- On resume, read directive, state, execplan tail, and heartbeat, then reconcile the tracked agent pool before acting.
 
 ## Config
 

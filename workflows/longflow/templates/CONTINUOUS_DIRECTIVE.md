@@ -8,9 +8,10 @@ At each batch boundary:
 
 1. Re-read this file.
 2. Read the current state file.
-3. Read the tail of `EXECPLAN.md`.
-4. Read `HEARTBEAT.md`.
-5. Continue from `next_action` unless state is hard-blocked.
+3. Reconcile tracked agent threads, persist returned results, and close consumed threads.
+4. Read the tail of `EXECPLAN.md`.
+5. Read `HEARTBEAT.md`.
+6. Continue from `next_action` unless state is hard-blocked.
 
 If you are about to ask a non-hard-block question, log `CHECKIN_SUPPRESSED`, make the best defensible decision inside the autonomy envelope, update state, and continue.
 

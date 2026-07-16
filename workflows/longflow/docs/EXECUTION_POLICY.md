@@ -20,6 +20,9 @@ If enabled in config or governance:
 - Orchestrator controls flow and evidence.
 - Implementers perform most code changes.
 - Orchestrator direct edits only for tiny low-risk fixes.
+- The normal delegated-thread budget is the harness limit minus two reserved slots.
+- Child prompts default to zero descendant delegation unless the orchestrator grants a named bounded exception.
+- Returned results are consumed and their threads closed promptly; agent-limit errors get one reconcile/reap and retry before sequential fallback.
 
 ## Routing Policy
 
@@ -55,3 +58,4 @@ Required files:
 - tasks/<date>-<slug>-execplan.md
 
 These must be updated and re-read according to shared contracts.
+Agent registry state is reconciled before new dispatches after compaction, restart, or handoff.

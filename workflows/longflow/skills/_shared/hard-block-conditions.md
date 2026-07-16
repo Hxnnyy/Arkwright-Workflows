@@ -33,6 +33,7 @@ The following are explicitly **not** hard-blocks. The orchestrator must proceed:
 - "Compaction may have lost context."
 - "It's been a long time since the last user message."
 - "The next wave touches a sensitive area."
+- "The agent limit is full." Reconcile/reap once, retry once, then continue non-independent work sequentially; pool pressure does not add a ninth hard-block condition.
 - Any harness-default end-of-turn check-in language.
 
 When the impulse to stop arises and none of the eight conditions applies, the impulse itself is the bug. Append a `[CHECKIN-SUPPRESSED]` entry to the execplan, make the decision, continue.

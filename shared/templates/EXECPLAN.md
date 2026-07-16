@@ -12,8 +12,9 @@
 2. Every child requires a passing `scripts/verify-issue-<n>.sh` before close.
 3. Reviewer verdicts use `_shared/reviewer-protocol.md` schema. Final close requires `blocking_count == 0` across required final reviewers; `PASS_WITH_NOTES` is not accepted at final.
 4. "Ask user" → `[CHECKIN-SUPPRESSED]` entry → decide and continue.
-5. Update `STATE.json` after every event.
+5. Track every spawned agent in `STATE.json`; returned is not closed.
 6. Implementers must not modify predicate scripts.
+7. Reserve two agent slots, default descendant delegation to zero, and reconcile/reap before every batch and after resume.
 
 ## Wave log
 
@@ -27,19 +28,22 @@
 
 #### Subagent dispatches
 
-- <ts> dispatch #<n> (files: [...])
-- <ts> return #<n>: <one-line summary>
+- <ts> dispatch agent <id> for #<n> (files: [...], delegation_budget: 0)
+- <ts> return agent <id> for #<n>: <one-line summary>
 - <ts> predicate `scripts/verify-issue-<n>.sh`: exit 0
 - <ts> commit <sha> "<commit message>"
+- <ts> close agent <id>: closed | close_failed
 
 #### Reviewer panel
 
-- <ts> dispatch implementation-quality-reviewer (wave 1)
+- <ts> dispatch agent <id> as implementation-quality-reviewer (wave 1)
 - <ts> verdict: PASS, blocking_count: 0, summary: "..."
+- <ts> close reviewer agent <id>: closed | close_failed
 - ...
 
 #### Wave 1 close
 
+- <ts> agent-pool reconciliation: <open/closed/close_failed roll-up>
 - <ts> all reviewers in {PASS, PASS_WITH_NOTES, NOT_APPLICABLE}
 - <ts> closed: #<n>, #<m>
 
@@ -63,6 +67,7 @@
 - <ts> dispatched final reviewer panel: [...]
 - <ts> verdicts: implementation-quality PASS, documentation PASS, security NOT_APPLICABLE, ...
 - <ts> blocking_count sum: 0
+- <ts> final agent-pool reconciliation: <all results consumed; closure roll-up>
 
 ## Closure
 
