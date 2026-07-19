@@ -28,7 +28,7 @@ Orchestrate delivery of a parent PRD's child issue tree. You are the orchestrato
 - Verify before commit: read diff, run predicate, run relevant tests, commit.
 - Commit before wave audit. Each verified child gets its own commit.
 - Close children only after wave sign-off (predicates green AND wave reviewers in `{PASS, PASS_WITH_NOTES, NOT_APPLICABLE}`).
-- Iterate on `BLOCKED` until clean (capped at 3 iterations per reviewer per wave; cap-hit is hard-block 4).
+- Iterate on `BLOCKED` within the gate's review-cycle budget: 3 cycles per gate, hard, counted per gate no matter how a re-review panel is named. At the budget, material findings (security, data loss/corruption, tenant isolation, failing predicate) are hard-block 4; everything else becomes a residual finding for `merge-train`. See `../_shared/reviewer-protocol.md`.
 - No parent closure without final sign-off.
 
 ## Inputs
@@ -147,14 +147,14 @@ Verdict handling per `../_shared/reviewer-protocol.md`:
 - `PASS_WITH_NOTES`: record notes for final sweep (only if non-structural; otherwise treat as `BLOCKED`).
 - `BLOCKED`: dispatch corrective implementer with structured findings as input. Re-run predicates. Re-run affected reviewer(s). Re-run full wave panel if cross-cutting.
 
-Iteration cap: 3 per reviewer per wave. Cap-hit on the same finding category = hard-block 4.
+Review-cycle budget: **3 cycles per gate, hard.** Every reviewer dispatch against the gate — partial re-run, full-panel re-run, or any relabelled "fresh"/"final"/"zero-blocker" pass — consumes one cycle; increment `reviewer_verdicts.wave_<N>.review_cycles` each time. At the budget: material findings (security, data loss/corruption, tenant isolation, failing predicate) = hard-block 4; all other open findings are recorded as residual findings in the execplan and gate comment, and the gate closes — `merge-train` catches stragglers pre-merge. Do not dispatch a fourth cycle.
 
 Do not rationalize away findings. Document any rebuttal with code evidence in the execplan.
 Corrective implementers and rerun reviewers use the same tracked return/reuse/close lifecycle as the original threads.
 
 ### 2g. Close wave children
 
-When all wave reviewers in `{PASS, PASS_WITH_NOTES, NOT_APPLICABLE}`:
+When all wave reviewers are in `{PASS, PASS_WITH_NOTES, NOT_APPLICABLE}` — or the wave's review-cycle budget is exhausted with only residual (non-material) findings open and recorded:
 
 1. Reconcile the wave's agent threads. Every returned result must be consumed and every terminal thread must have closure attempted.
 2. Append wave summary to execplan: children, commits, reviewers, verdicts, predicate roll-up.
@@ -192,9 +192,9 @@ Each receives:
   - Verify the PRD from the codebase, not from implementation reports.
   - Final closeout accepts only `PASS`, `BLOCKED`, or `NOT_APPLICABLE`. `PASS_WITH_NOTES` here is treated as `BLOCKED`.
 
-If any returns `BLOCKED`: fix, commit, re-run that reviewer. Re-run the full final panel if cross-cutting. Iteration cap as in wave gates.
+If any returns `BLOCKED`: fix, commit, re-run that reviewer. Re-run the full final panel if cross-cutting. The final panel has the same hard budget as a wave gate: 3 review cycles total. At the budget, material findings hard-block; all other open findings become residual findings converted to follow-up issues — `merge-train` re-reviews the full branch before merge.
 
-**Closure condition**: every required final reviewer returns `PASS` or `NOT_APPLICABLE` with `blocking_count == 0`.
+**Closure condition**: every required final reviewer returns `PASS` or `NOT_APPLICABLE` with `blocking_count == 0` — or the final panel's review-cycle budget is exhausted with only residual (non-material) findings, recorded and converted to follow-up issues.
 
 Update `STATE.json`: `reviewer_verdicts.final.<reviewer> = ...` for each.
 Close each final reviewer thread as soon as its valid verdict is stored.

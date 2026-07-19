@@ -15,7 +15,7 @@ Run the whole Arkwright Longflow when the user wants a feature, plan, or rough i
 3. **Council before PRD when risk is non-trivial.** Use `council` for broad, ambiguous, high-risk, or multi-system work. Small well-scoped work may go straight to `write-a-prd` if the decision tree is already settled.
 4. **Predicates are authored before implementation.** `prd-to-issues` owns predicate scripts and file-ownership contracts. Implementers do not rewrite them.
 5. **Continuous delivery is the default once execution starts.** After `issues-execution` begins, continue until parent closure or a finite hard block.
-6. **Fresh reviewers verify from code.** Final approval requires fresh reviewers inspecting the codebase and evidence, not trusting implementation reports.
+6. **Fresh reviewers verify from code.** Final approval requires fresh reviewers inspecting the codebase and evidence, not trusting implementation reports. Fresh eyes consume the gate's review-cycle budget (3 cycles per gate, hard — see `../_shared/reviewer-protocol.md`); they never reset it.
 7. **Execution uses a bounded agent pool.** `issues-execution` owns thread tracking, reserves corrective capacity, defaults children to zero descendant delegation, and closes consumed agents per `../_shared/agent-lifecycle.md`.
 
 ## Flow

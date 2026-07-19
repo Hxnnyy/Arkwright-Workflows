@@ -77,6 +77,7 @@ A machine-readable snapshot of orchestration state, updated after every meaningf
   ],
   "reviewer_verdicts": {
     "wave_<N>": {
+      "review_cycles": <integer>,   // reviewer dispatches consumed against this gate; hard budget 3, shared by all panels however named
       "<reviewer-name>": {
         "verdict": "PASS | PASS_WITH_NOTES | BLOCKED | NOT_APPLICABLE",
         "blocking_count": <integer>,

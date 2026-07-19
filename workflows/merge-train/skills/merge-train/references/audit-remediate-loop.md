@@ -11,7 +11,7 @@ Each child must survive a strict audit, remediation, and fresh verification loop
 5. Remediate blockers within child scope.
 6. Run configured tests and predicates.
 7. Dispatch a fresh verifier that receives the remediated diff and evidence, not the remediator's confidence.
-8. Repeat until no blockers remain.
+8. Repeat, capped at **3 audit-remediate cycles per child**. At the cap, stop looping: list the open blockers in `CHILD_PR_REPORT.md` and the child completion comment, and hold the child for owner disposition instead of dispatching further cycles.
 
 ## Risk Handling
 

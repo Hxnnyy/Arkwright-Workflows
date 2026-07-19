@@ -69,6 +69,8 @@ verdict ∈ {PASS, PASS_WITH_NOTES, NOT_APPLICABLE}
 
 If a `PASS_WITH_NOTES` finding is structural (architecture, type system, security boundary, public-API surface), the orchestrator must escalate it to `BLOCKED` and fix it within the wave.
 
+A wave gate may also close with its review-cycle budget exhausted and only residual (non-material) findings open, per the budget rules below. Material findings never close a gate this way — they hard-block.
+
 ## Final-closeout closure
 
 The parent PRD closes when, for every required final reviewer:
@@ -78,6 +80,8 @@ verdict ∈ {PASS, NOT_APPLICABLE} AND blocking_count == 0
 ```
 
 `PASS_WITH_NOTES` is **not accepted at final closeout**. Notes from waves must be resolved or converted to follow-up issues before the final reviewer panel runs. If a final reviewer returns `PASS_WITH_NOTES`, the orchestrator treats it as `BLOCKED` and fixes the notes.
+
+The final panel has the same 3-cycle budget as a wave gate. If the budget is exhausted with only non-material findings open, record them as residual findings, convert genuinely out-of-scope ones to follow-up issues, and close — the `merge-train` pre-merge review re-reviews the full branch and is the designated backstop.
 
 ## Iterate-on-blocked
 
@@ -89,11 +93,23 @@ When any reviewer returns `BLOCKED`:
 4. Commit the fix referencing the originating wave or final-closeout cycle.
 5. Re-dispatch the affected reviewer(s).
 6. Re-run the **full wave or final panel** if the fix is cross-cutting (touches files outside the original review surface, or changes risk categories).
-7. Loop until closure conditions above are met.
+7. Loop until closure conditions above are met or the review-cycle budget is exhausted.
 
-### Iteration cap
+### Review-cycle budget (hard limit)
 
-Cap reviewer iterations at 3 per wave per reviewer (or per final-closeout cycle per reviewer). Failure to converge after 3 iterations on the same finding category is hard-block condition 4 (`reviewer findings contradict each other`).
+A **review cycle** is one reviewer dispatch against a gate — the full panel or any subset, including re-runs and re-verifications — plus the remediation that follows it. Every gate (each wave gate, and the final-closeout panel) has a hard budget of **3 review cycles**. The initial review is cycle 1; at most two remediate-and-re-review rounds follow.
+
+Counting rules:
+
+- The budget counts per gate, not per reviewer. Re-running one reviewer and re-running the full panel each consume one cycle.
+- Renaming a panel does not reset the budget. A "fresh", "final", "release", "absolute", "zero-blocker", or otherwise relabelled re-verification of the same gate counts against the same budget of 3. Fresh eyes consume cycles; they never mint them.
+- Track the count in `STATE.json` at `reviewer_verdicts.<gate>.review_cycles` and log each cycle in the execplan.
+
+When the budget is exhausted, the gate settles on the evidence in hand instead of dispatching more reviewers:
+
+- An open finding is **material** only if it is an exploitable security vulnerability, data loss or corruption, a tenant-isolation breach, or a failing predicate/test. A material finding open at the budget fires hard-block 4.
+- Every other open finding — including `blocking: true` findings — is downgraded to a **residual finding**: record it in the execplan and the gate's parent-issue comment, then close the gate and continue. `merge-train` re-reviews the full branch before merge and is the designated backstop for residual findings.
+- Dispatching a fourth cycle against a gate is a protocol violation regardless of what the panel is called.
 
 ## No rationalising findings
 

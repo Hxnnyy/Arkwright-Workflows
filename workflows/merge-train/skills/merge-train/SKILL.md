@@ -68,7 +68,7 @@ For each child slice or child PR:
 3. Remediate blocking findings within child scope.
 4. Run configured tests and predicates.
 5. Dispatch a fresh verifier.
-6. Iterate until no blockers remain or a hard block fires.
+6. Iterate until no blockers remain, the 3-cycle cap in `references/audit-remediate-loop.md` is hit (hold the child for owner disposition), or a hard block fires.
 7. Post/update the child completion comment and child report.
 8. Integrate into the parent branch according to repo policy.
 9. Update parent ledger, risk register, and state.

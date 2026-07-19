@@ -73,7 +73,7 @@
 
 - <ts> parent PRD #<n> closed
 - Total waves: N
-- Reviewer iterations: <count>
+- Review cycles used per gate: <wave: n/3, ..., final: n/3>
 - Predicate scripts run on close: N (all passed)
 - Commits: N
 - Mode transitioned to: complete

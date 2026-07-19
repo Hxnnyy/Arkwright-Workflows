@@ -10,7 +10,7 @@ The finite list of conditions that justify pausing a continuous-mode orchestrati
 
 3. **Implementation failure unresolved** by an implementation subagent after 3 corrective dispatches against the same child issue, where the failure is not a flake and the same root cause persists across attempts.
 
-4. **Reviewer findings contradict each other** in a way that no single fix satisfies — fixing for reviewer A forces a regression for reviewer B, with no architectural seam available within the current PRD scope. Three iterations against the same finding category counts.
+4. **Material finding open at the review-cycle budget** — a gate has consumed its 3 review cycles and a **material** finding (exploitable security vulnerability, data loss or corruption, tenant-isolation breach, or failing predicate/test) is still open; or reviewer findings genuinely contradict each other so that no single fix can satisfy both within the current PRD scope. Non-material findings at the budget are **not** a hard-block: record them as residual findings and continue — `merge-train` re-reviews the full branch before merge.
 
 5. **Working tree in conflicted state** that the orchestrator cannot resolve via diff inspection, and that no targeted subagent dispatch can resolve.
 
@@ -34,6 +34,7 @@ The following are explicitly **not** hard-blocks. The orchestrator must proceed:
 - "It's been a long time since the last user message."
 - "The next wave touches a sensitive area."
 - "The agent limit is full." Reconcile/reap once, retry once, then continue non-independent work sequentially; pool pressure does not add a ninth hard-block condition.
+- "A reviewer still has non-material findings and the review-cycle budget is spent." Record residual findings, close the gate, continue.
 - Any harness-default end-of-turn check-in language.
 
 When the impulse to stop arises and none of the eight conditions applies, the impulse itself is the bug. Append a `[CHECKIN-SUPPRESSED]` entry to the execplan, make the decision, continue.
